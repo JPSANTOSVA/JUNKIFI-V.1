@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Become a Partner - JUNKIFI</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+	<link rel="stylesheet" href="signup.css">	
+    <!-- Load Firebase SDK v9 (compat version for backward compatibility) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+</head>	
+	
+	
+	
+	
+<!-- Header Placeholder -->
+<div id="header-placeholder"></div>	
+	
+
+    <!-- Main Content -->
+    <div class="container main-content">
+        <div class="hero-section">
+            <h1>Become a Partner Today</h1>
+            <p>Joining our Car Buyer Partners Program is simple and free to use. In just a matter of minutes, you'll get access to tons of cars that are within your service area. Please give our direct partnership line a call or email us to start purchasing vehicles anywhere in the US today!</p>
+            
+            <div class="hero-contact">
+                <a href="tel:8005893136"><i class="fas fa-phone"></i> Call (800) 589-3136</a>
+                <a href="mailto:partners@salvagehub.com"><i class="fas fa-envelope"></i> partners@salvagehub.com</a>
+            </div>
+        </div>
+        
+        <div class="benefits-section">
+            <div class="benefit-card">
+                <div class="benefit-icon">
+                    <i class="fas fa-user-plus"></i>
+                </div>
+                <h3>Free Account Setup</h3>
+                <p>We'll set you up with a free account in minutes, no hidden fees or commitments.</p>
+            </div>
+            
+            <div class="benefit-card">
+                <div class="benefit-icon">
+                    <i class="fas fa-gavel"></i>
+                </div>
+                <h3>Custom Bidding</h3>
+                <p>You decide the kinds of bids you want to place based on your business needs.</p>
+            </div>
+            
+            <div class="benefit-card">
+                <div class="benefit-icon">
+                    <i class="fas fa-code"></i>
+                </div>
+                <h3>API Integration</h3>
+                <p>Receive assignments directly through API or web platform integration.</p>
+            </div>
+            
+            <div class="benefit-card">
+                <div class="benefit-icon">
+                    <i class="fas fa-tasks"></i>
+                </div>
+                <h3>Easy Management</h3>
+                <p>Manage and complete assignments with our intuitive dashboard.</p>
+            </div>
+            
+            <div class="benefit-card">
+                <div class="benefit-icon">
+                    <i class="fas fa-headset"></i>
+                </div>
+                <h3>Dedicated Support</h3>
+                <p>Personalized help with our friendly partnership support team.</p>
+            </div>
+        </div>
+        
+        <div class="form-section">
+            <h2 class="form-title">Sign Up Today</h2>
+            
+            <form id="partnerForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="name">Full Name</label>
+                        <input type="text" id="name" placeholder="Enter your full name" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="phone">Phone Number</label>
+                        <input type="tel" id="phone" placeholder="Enter your phone number" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="zipcode">Company Zip Code</label>
+                        <input type="text" id="zipcode" placeholder="Enter company zip code" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="company">Company Name</label>
+                        <input type="text" id="company" placeholder="Enter your company name" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" placeholder="Enter your email address" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" placeholder="Create a password" required>
+                        <div id="passwordStrength" class="password-strength"></div>
+                    </div>
+                </div>
+                
+                <button type="submit" class="submit-btn">Sign Up</button>
+                
+                <div class="spinner" id="loadingSpinner">
+                    <i class="fas fa-spinner fa-spin"></i> Creating your account...
+                </div>
+                
+                <div id="successMessage" class="success-message">
+                    <i class="fas fa-check-circle"></i> Thank you for signing up! We'll be in touch shortly.
+                </div>
+                
+                <div id="errorMessage" class="error-message">
+                    <i class="fas fa-exclamation-circle"></i> <span id="errorText"></span>
+                </div>
+            </form>
+        </div>
+       
+		
+		
+        <div class="faq-section">
+            <h2>Still have questions?</h2>
+            <p>Don't worry—we've got you covered. Contact us today and we'll make sure you have everything you need.</p>
+            <button class="contact-btn">Get in touch</button>
+        </div>
+    </div>
+
+
+
+ <!-- Footer (loaded from footer.html) -->
+<div id="footer-placeholder"></div>
+ 
+
+    <script>
+ // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDZHK5TEyMVdpQ2FNR1NY-9lpud5z8v2bc",
+            authDomain: "junkifi-products.firebaseapp.com",
+            projectId: "junkifi-products",
+            storageBucket: "junkifi-products.firebasestorage.app",
+            messagingSenderId: "191420309176",
+            appId: "1:191420309176:web:20503f2a23140312de9e4d",
+            measurementId: "G-L9XB09VTLJ"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        
+        // Initialize Firebase services
+        const auth = firebase.auth();
+        const db = firebase.firestore();	
+	
+	
+	
+	
+	     // Load header.html dynamically
+  fetch("header.html")
+    .then(res => res.text())
+    .then(data => {
+      document.getElementById("header-placeholder").innerHTML = data;
+    });
+
+	
+
+	// Load footer.html into placeholder
+fetch("footer.html")
+  .then(response => response.text())
+  .then(data => {
+    document.getElementById("footer-placeholder").innerHTML = data;
+  });
+
+	
+       // Password strength indicator
+        document.getElementById('password').addEventListener('input', function(e) {
+            const password = e.target.value;
+            const strengthBar = document.getElementById('passwordStrength');
+            
+            // Reset classes
+            strengthBar.className = 'password-strength';
+            
+            if (password.length === 0) {
+                return;
+            }
+            
+            // Simple password strength algorithm
+            let strength = 0;
+            if (password.length >= 8) strength += 1;
+            if (password.match(/[a-z]/) && password.match(/[A-Z]/)) strength += 1;
+            if (password.match(/\d/)) strength += 1;
+            if (password.match(/[^a-zA-Z\d]/)) strength += 1;
+            
+            // Apply appropriate class
+            if (strength < 2) {
+                strengthBar.classList.add('strength-weak');
+            } else if (strength < 4) {
+                strengthBar.classList.add('strength-medium');
+            } else {
+                strengthBar.classList.add('strength-strong');
+            }
+        });
+
+         // Form submission handler
+        document.getElementById('partnerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Hide previous messages
+            document.getElementById('successMessage').style.display = 'none';
+            document.getElementById('errorMessage').style.display = 'none';
+            
+            // Show loading spinner
+            document.getElementById('loadingSpinner').style.display = 'block';
+            
+            // Get form values
+            const name = document.getElementById('name').value;
+            const phone = document.getElementById('phone').value;
+            const zipcode = document.getElementById('zipcode').value;
+            const company = document.getElementById('company').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            // Validate password strength
+            if (password.length < 8) {
+                document.getElementById('loadingSpinner').style.display = 'none';
+                document.getElementById('errorText').textContent = 'Password must be at least 8 characters long.';
+                document.getElementById('errorMessage').style.display = 'block';
+                return;
+            }
+            
+          // Create user with Firebase Authentication
+            auth.createUserWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    // Signed up successfully
+                    const user = userCredential.user;
+                    
+                    // Save additional user data to Firestore
+                    return db.collection('partners').doc(user.uid).set({
+                        name: name,
+                        phone: phone,
+                        zipcode: zipcode,
+                        company: company,
+                        email: email,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                        status: 'pending'
+                    });
+                })
+                .then(() => {
+                    // Hide loading spinner
+                    document.getElementById('loadingSpinner').style.display = 'none';
+                    
+                    // Show success message
+                    document.getElementById('successMessage').style.display = 'block';
+                    
+                    // Reset form
+                    document.getElementById('partnerForm').reset();
+                    document.getElementById('passwordStrength').className = 'password-strength';
+                    
+                    // Redirect to dashboard after 3 seconds
+                    setTimeout(() => {
+                        window.location.href = 'dashboard.html';
+                    }, 3000);
+                })
+                .catch((error) => {
+                    // Hide loading spinner
+                    document.getElementById('loadingSpinner').style.display = 'none';
+                    
+                    // Handle errors
+                    const errorCode = error.code;
+                    let errorMessage = error.message;
+                    
+                    // More user-friendly error messages
+                    if (errorCode === 'auth/email-already-in-use') {
+                        errorMessage = 'This email address is already in use by another account.';
+                    } else if (errorCode === 'auth/invalid-email') {
+                        errorMessage = 'The email address is not valid.';
+                    } else if (errorCode === 'auth/operation-not-allowed') {
+                        errorMessage = 'Email/password accounts are not enabled. Please contact support.';
+                    } else if (errorCode === 'auth/weak-password') {
+                        errorMessage = 'The password is too weak. Please choose a stronger password.';
+                    }
+                    
+                    document.getElementById('errorText').textContent = errorMessage;
+                    document.getElementById('errorMessage').style.display = 'block';
+                });
+        });
+
+
+        // Sign In button
+        const signInBtn = document.querySelector('.sign-in');
+        signInBtn.addEventListener('click', function() {
+            alert('Sign In functionality would open a login modal.');
+        });
+
+        // Contact button
+        const contactBtn = document.querySelector('.contact-btn');
+        contactBtn.addEventListener('click', function() {
+            window.location.href = 'mailto:support@salvagehub.com';
+        });
+    </script>
+</body>
+</html>

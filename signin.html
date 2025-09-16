@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign In - JUNKIFI</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+	<link rel="stylesheet" href="signin.css">
+</head>
+<body>
+  <!-- Header (loaded from header.html) -->
+  <div id="header-placeholder"></div>
+
+  <!-- Main Content -->
+  <div class="container main-content">
+    <div class="form-section">
+      <h2 class="form-title">Sign In to Your Account</h2>
+      <form id="signinForm">
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input type="email" id="email" placeholder="Enter your email address" required>
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" placeholder="Enter your password" required>
+        </div>
+
+        <button type="submit" class="submit-btn">Sign In</button>
+
+        <div class="spinner" id="loadingSpinner">
+          <i class="fas fa-spinner fa-spin"></i> Signing you in...
+        </div>
+
+        <div id="successMessage" class="success-message">
+          <i class="fas fa-check-circle"></i> Successfully signed in! Redirecting...
+        </div>
+
+        <div id="errorMessage" class="error-message">
+          <i class="fas fa-exclamation-circle"></i> <span id="errorText"></span>
+        </div>
+
+        <div class="form-footer">
+          <p>Don't have an account? <a href="signup.html">Sign up here</a></p>
+          <p><a href="forgot-password.html">Forgot your password?</a></p>
+        </div>
+      </form>
+    </div>
+  </div>
+
+ 
+
+  <!-- Firebase App (core Firebase SDK) -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+  <!-- Footer (loaded from footer.html) -->
+<div id="footer-placeholder"></div>
+ 
+
+
+
+
+
+
+  <script>
+  
+	
+// In your signin.html, replace the header loading code with this:
+fetch("header.html")
+  .then(res => res.text())
+  .then(data => {
+    document.getElementById("header-placeholder").innerHTML = data;
+    
+    // Wait for the header to be fully rendered
+    setTimeout(() => {
+      // Check authentication state
+      const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+      const userEmail = localStorage.getItem('userEmail');
+      
+      const signInBtn = document.getElementById('sign-in-btn');
+      const signUpBtn = document.getElementById('sign-up-btn');
+      const userContainer = document.getElementById('user-container');
+      const userEmailSpan = document.getElementById('user-email');
+      const logoutContainer = document.getElementById('logout-container');
+      
+      if (isLoggedIn) {
+        if (signInBtn) signInBtn.style.display = 'none';
+        if (signUpBtn) signUpBtn.style.display = 'none';
+        if (userContainer) userContainer.style.display = 'flex';
+        if (userEmailSpan) {
+          const username = userEmail ? userEmail.split('@')[0] : 'User';
+          userEmailSpan.textContent = username;
+        }
+      } else {
+        if (signInBtn) signInBtn.style.display = 'block';
+        if (signUpBtn) signUpBtn.style.display = 'block';
+        if (userContainer) userContainer.style.display = 'none';
+        if (userEmailSpan) userEmailSpan.textContent = '';
+        if (logoutContainer) logoutContainer.style.display = 'none';
+      }
+    }, 100);
+  });
+	
+	
+	
+	
+	
+	
+	// Load footer.html into placeholder
+fetch("footer.html")
+  .then(response => response.text())
+  .then(data => {
+    document.getElementById("footer-placeholder").innerHTML = data;
+  });
+
+	
+
+    const firebaseConfig = {
+  apiKey: "AIzaSyDZHK5TEyMVdpQ2FNR1NY-9lpud5z8v2bc",
+  authDomain: "junkifi-products.firebaseapp.com",
+  projectId: "junkifi-products",
+  storageBucket: "junkifi-products.firebasestorage.app",
+  messagingSenderId: "191420309176",
+  appId: "1:191420309176:web:20503f2a23140312de9e4d",
+  measurementId: "G-L9XB09VTLJ"
+};
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    // Sign-in handler
+    document.getElementById('signinForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      document.getElementById('successMessage').style.display = 'none';
+      document.getElementById('errorMessage').style.display = 'none';
+      document.getElementById('loadingSpinner').style.display = 'block';
+
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      auth.signInWithEmailAndPassword(email, password)
+  .then((userCredential) => {
+    const user = userCredential.user;
+    document.getElementById('loadingSpinner').style.display = 'none';
+    document.getElementById('successMessage').style.display = 'block';
+
+    localStorage.setItem('isLoggedIn', 'true');
+    localStorage.setItem('userEmail', user.email);
+    localStorage.setItem('userId', user.uid);
+
+    // Redirect to the page they came from or dashboard
+    const urlParams = new URLSearchParams(window.location.search);
+    const redirectUrl = urlParams.get('redirect') || 'dashboard.html';
+    
+    setTimeout(() => {
+      window.location.href = redirectUrl;
+    }, 2000);
+  })
+        .catch((error) => {
+          document.getElementById('loadingSpinner').style.display = 'none';
+          let errorMessage = error.message;
+          if (error.code === 'auth/user-not-found') errorMessage = 'No account found with this email address.';
+          if (error.code === 'auth/wrong-password') errorMessage = 'Incorrect password. Please try again.';
+          if (error.code === 'auth/invalid-email') errorMessage = 'The email address is not valid.';
+          if (error.code === 'auth/user-disabled') errorMessage = 'This account has been disabled. Please contact support.';
+          document.getElementById('errorText').textContent = errorMessage;
+          document.getElementById('errorMessage').style.display = 'block';
+        });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,1370 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Check Offer - JUNKIFI</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+	<link rel="stylesheet" href="checkoffer.css">
+	
+	
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+
+
+	
+	
+	
+	
+</head>
+<body>
+<div id="header-placeholder"></div>
+
+<!-- Firebase SDKs -->
+
+<!-- Main Content -->
+<div class="container main-content">
+    <!-- Content for authenticated users -->
+    <div id="authenticated-content" style="display: none;">
+        <h1 class="page-title">CHECK THE LATEST OFFER</h1>
+        
+        <!-- Filter Section -->
+        <div class="filter-section">
+            <h2 class="filter-title">Filter Vehicles</h2>
+            <div class="filter-form">
+            
+                <div class="form-group">
+                    <label for="year-filter">Year</label>
+                    <select id="year-filter">
+                        <option value="">Select Year</option>
+                        <!-- Years will be populated by JavaScript -->
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="make-filter">Make</label>
+                    <select id="make-filter" disabled>
+                        <option value="">Select Make</option>
+                        <!-- Makes will be populated based on year selection -->
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="model-filter">Model</label>
+                    <select id="model-filter" disabled>
+                        <option value="">Select Model</option>
+                        <!-- Models will be populated based on make selection -->
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="location-filter">Location</label>
+                    <input type="text" id="location-filter" placeholder="ZIP Code">
+                </div>
+                
+                <button class="filter-btn">Apply Filters</button>
+            </div>
+        </div>
+        
+        <!-- All Vehicles Section -->
+        <h2 class="saved-vehicles-header">All Available Vehicles</h2>
+        <div class="vehicle-listings" id="allVehicles">
+            <!-- All vehicles will be displayed here dynamically -->
+        </div>
+   
+
+        
+        <!-- Pagination -->
+        <div class="pagination">
+            <button class="pagination-btn active">1</button>
+            <button class="pagination-btn">2</button>
+            <button class="pagination-btn">3</button>
+            <button class="pagination-btn">Next</button>
+        </div>
+    </div>
+    
+    <!-- Content for unauthenticated users -->
+    <div id="unauthenticated-content" style="display: none;">
+        <div class="login-prompt">
+            <i class="fas fa-lock"></i>
+            <h2>Authentication Required</h2>
+            <p>You need to be logged in to browse our vehicle inventory.</p>
+            <a href="signin.html" class="login-btn">Sign In</a>
+        </div>
+    </div>
+</div>
+
+
+<!-- Notes Modal -->
+<div id="notesModal" class="notes-modal">
+    <div class="notes-modal-content">
+        <h3>Add Note</h3>
+        <textarea id="noteText" placeholder="Enter your note here..."></textarea>
+        <div class="notes-modal-buttons">
+            <button id="cancelNoteBtn" class="notes-cancel-btn">Cancel</button>
+            <button id="saveNoteBtn" class="notes-save-btn">Save Note</button>
+        </div>
+    </div>
+</div>
+
+
+<!-- Confirmation Modal -->
+<div id="confirmationModal" class="confirmation-modal">
+    <div class="modal-content">
+        <h3>Confirm Deletion</h3>
+      <p>Are you sure you want to delete this vehicle listing and all associated notes? This action cannot be undone.</p>
+        <div class="modal-buttons">
+            <button id="confirmDeleteBtn" class="confirm-btn">Yes, Delete</button>
+            <button id="cancelDeleteBtn" class="cancel-btn">Cancel</button>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+<div id="footer-placeholder"></div>
+
+<script>
+
+// Global variables for notes functionality
+let currentVehicleIdForNotes = null;
+let notesModal = null;
+let noteTextArea = null;
+
+// Initialize notes functionality
+function initializeNotes() {
+    notesModal = document.getElementById('notesModal');
+    noteTextArea = document.getElementById('noteText');
+    
+    // Set up event listeners for notes modal
+    document.getElementById('saveNoteBtn').addEventListener('click', saveNote);
+    document.getElementById('cancelNoteBtn').addEventListener('click', closeNotesModal);
+    
+    // Close modal when clicking outside
+    notesModal.addEventListener('click', function(e) {
+        if (e.target === notesModal) {
+            closeNotesModal();
+        }
+    });
+}
+
+// Function to open notes modal
+function openNotesModal(vehicleId) {
+    currentVehicleIdForNotes = vehicleId;
+    noteTextArea.value = '';
+    notesModal.style.display = 'flex';
+    noteTextArea.focus();
+}
+
+// Function to close notes modal
+function closeNotesModal() {
+    notesModal.style.display = 'none';
+    currentVehicleIdForNotes = null;
+}
+
+function saveNote() {
+    if (!currentVehicleIdForNotes || !noteTextArea.value.trim()) {
+        alert('Please enter a note');
+        return;
+    }
+    
+    if (!AuthManager.isInitialized || !AuthManager.db) {
+        alert('Database not initialized. Please try again.');
+        return;
+    }
+    
+    const user = AuthManager.auth.currentUser;
+    if (!user) {
+        alert('You must be logged in to add notes');
+        return;
+    }
+    
+    const noteData = {
+        text: noteTextArea.value.trim(),
+        vehicleId: currentVehicleIdForNotes,
+        userId: user.uid,
+        userEmail: user.email,
+        timestamp: new Date()
+    };
+    
+AuthManager.db.collection("vehicleNotes").add(noteData)
+    .then(() => {
+        console.log("Note successfully saved");
+
+        // Refresh notes BEFORE closing modal
+        loadNotesForVehicle(currentVehicleIdForNotes);
+
+        // Now close the modal
+        closeNotesModal();
+    })
+    .catch((error) => {
+        console.error("Error saving note: ", error);
+        alert("Error saving note. Please try again. Error: " + error.message);
+    });
+}
+
+// Auto-refresh every 60 seconds
+setInterval(() => {
+    if (typeof AuthManager !== 'undefined' && AuthManager.isInitialized) {
+        loadVehiclesFromFirebase();
+    }
+}, 60000); // 60000ms = 60 seconds
+
+
+
+// Function to load notes for a specific vehicle
+function loadNotesForVehicle(vehicleId) {
+    // Ensure Firebase is initialized
+    if (!AuthManager.isInitialized || !AuthManager.db) {
+        console.error("Firebase not initialized");
+        return;
+    }
+    
+    const user = AuthManager.auth.currentUser;
+    if (!user) {
+        console.log("User not authenticated, skipping notes load");
+        return;
+    }
+    
+    console.log(`Loading notes for vehicle: ${vehicleId}, user: ${user.uid}`);
+    
+    // Get notes for this vehicle and user
+    AuthManager.db.collection("vehicleNotes")
+        .where("vehicleId", "==", vehicleId)
+        .where("userId", "==", user.uid)
+        .orderBy("timestamp", "desc")
+        .get()
+        .then((querySnapshot) => {
+            const notes = [];
+            querySnapshot.forEach((doc) => {
+                notes.push({ id: doc.id, ...doc.data() });
+            });
+            
+            console.log(`Found ${notes.length} notes for vehicle ${vehicleId}`);
+            
+            // Display notes in the appropriate container
+            displayNotes(vehicleId, notes);
+        })
+        .catch((error) => {
+            console.error("Error getting notes: ", error);
+            // Fallback: try without ordering if index isn't ready
+            loadNotesWithoutOrdering(vehicleId, user.uid);
+        });
+}
+
+// Fallback function if index isn't ready
+function loadNotesWithoutOrdering(vehicleId, userId) {
+    console.log("Trying fallback method without ordering...");
+    AuthManager.db.collection("vehicleNotes")
+        .where("vehicleId", "==", vehicleId)
+        .where("userId", "==", userId)
+        .get()
+        .then((querySnapshot) => {
+            const notes = [];
+            querySnapshot.forEach((doc) => {
+                notes.push({ id: doc.id, ...doc.data() });
+            });
+            
+            // Manual sorting by timestamp (newest first)
+            notes.sort((a, b) => {
+                const dateA = a.timestamp?.toDate ? a.timestamp.toDate() : new Date(a.timestamp);
+                const dateB = b.timestamp?.toDate ? b.timestamp.toDate() : new Date(b.timestamp);
+                return dateB - dateA;
+            });
+            
+            console.log(`Found ${notes.length} notes (fallback method)`);
+            displayNotes(vehicleId, notes);
+        })
+        .catch((error) => {
+            console.error("Error in fallback method: ", error);
+        });
+}
+
+
+
+
+
+
+
+
+// Function to display notes in the UI
+function displayNotes(vehicleId, notes) {
+    console.log(`Displaying ${notes.length} notes for vehicle ${vehicleId}`);
+    
+    const notesContainer = document.getElementById(`notes-container-${vehicleId}`);
+    const notesList = document.getElementById(`notes-list-${vehicleId}`);
+    const noNotesMsg = document.getElementById(`no-notes-${vehicleId}`);
+    
+    if (!notesContainer) {
+        console.error(`Notes container not found for vehicle ${vehicleId}`);
+        return;
+    }
+    
+    if (notes.length === 0) {
+        if (noNotesMsg) noNotesMsg.style.display = 'block';
+        if (notesList) notesList.style.display = 'none';
+    } else {
+        if (noNotesMsg) noNotesMsg.style.display = 'none';
+        if (notesList) {
+            notesList.style.display = 'block';
+            notesList.innerHTML = '';
+            
+            notes.forEach(note => {
+                const noteDate = new Date(note.timestamp?.toDate() || note.timestamp);
+                const formattedDate = noteDate.toLocaleString();
+                
+                const noteElement = document.createElement('div');
+                noteElement.className = 'note-item';
+                noteElement.innerHTML = `
+                    <div class="note-content">${note.text}</div>
+                    <div class="note-footer">
+                        <div class="note-date">${formattedDate}</div>
+                        <button class="delete-note-btn" data-note-id="${note.id}" data-vehicle-id="${vehicleId}" title="Delete this note">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+                
+                notesList.appendChild(noteElement);
+            });
+            
+            // Attach delete event listeners after creating the notes
+            attachNoteDeleteListeners();
+        }
+    }
+}
+
+// Function to delete a note
+function deleteNote(noteId, vehicleId) {
+    if (!AuthManager.isInitialized || !AuthManager.db) {
+        alert('Database not initialized. Please try again.');
+        return;
+    }
+    
+    const user = AuthManager.auth.currentUser;
+    if (!user) {
+        alert('You must be logged in to delete notes');
+        return;
+    }
+    
+    if (!confirm('Are you sure you want to delete this note?')) {
+        return;
+    }
+    
+    // Delete note from Firebase
+    AuthManager.db.collection("vehicleNotes").doc(noteId).delete()
+        .then(() => {
+            console.log("Note successfully deleted");
+            // Reload notes for this vehicle
+            loadNotesForVehicle(vehicleId);
+        })
+        .catch((error) => {
+            console.error("Error deleting note: ", error);
+            alert("Error deleting note. Please try again. Error: " + error.message);
+        });
+}
+
+
+// Function to attach delete event listeners to note buttons
+function attachNoteDeleteListeners() {
+    const deleteButtons = document.querySelectorAll('.delete-note-btn');
+    console.log(`Found ${deleteButtons.length} note delete buttons`);
+    
+    deleteButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const noteId = this.getAttribute('data-note-id');
+            const vehicleId = this.getAttribute('data-vehicle-id');
+            console.log(`Delete note button clicked for note ID: ${noteId}, vehicle ID: ${vehicleId}`);
+            deleteNote(noteId, vehicleId);
+        });
+    });
+}
+
+let currentPage = 1;
+const itemsPerPage = 10; // Set your desired items per page
+
+
+
+
+
+
+
+
+
+// Load header and footer
+fetch("header.html")
+  .then(res => res.text())
+  .then(data => {
+    const headerPlaceholder = document.getElementById("header-placeholder");
+    headerPlaceholder.innerHTML = data;
+
+    // Run any <script> tags from header.html
+    const scripts = headerPlaceholder.querySelectorAll("script");
+    scripts.forEach(oldScript => {
+      const newScript = document.createElement("script");
+      if (oldScript.src) {
+        newScript.src = oldScript.src;
+      } else {
+        newScript.textContent = oldScript.textContent;
+      }
+      document.body.appendChild(newScript);
+    });
+    
+  const checkAuthManager = setInterval(() => {
+        if (typeof AuthManager !== 'undefined' && AuthManager.isInitialized) {
+            clearInterval(checkAuthManager);
+            
+            // Check auth state
+            AuthManager.checkAuthState().then(isLoggedIn => {
+                updateUIForAuthState(isLoggedIn);
+                
+                // Load vehicles only if user is authenticated
+                if (isLoggedIn) {
+                    const userEmail = localStorage.getItem('userEmail');
+                    if (userEmail === 'admin@gmail.com') {
+                        console.log("Admin user detected - enabling delete functionality");
+                    }
+                    loadVehiclesFromFirebase();
+                }
+            }).catch(error => {
+                console.error("Error checking auth state:", error);
+                updateUIForAuthState(false);
+            });
+            
+            // Initialize other functionality
+            setupDeleteConfirmation();
+            initializeNotes();
+        }
+    }, 100);
+});
+// Load footer
+fetch("footer.html")
+  .then(response => response.text())
+  .then(data => {
+    document.getElementById("footer-placeholder").innerHTML = data;
+  });
+
+// Function to check authentication status and update UI accordingly
+function updateUIForAuthState(isLoggedIn) {
+    const authenticatedContent = document.getElementById('authenticated-content');
+    const unauthenticatedContent = document.getElementById('unauthenticated-content');
+    
+    if (isLoggedIn) {
+        // User is logged in - show vehicle browsing content
+        if (authenticatedContent) {
+            authenticatedContent.style.display = 'block';
+        }
+        if (unauthenticatedContent) {
+            unauthenticatedContent.style.display = 'none';
+        }
+    } else {
+        // User is not logged in - show login prompt
+        if (authenticatedContent) {
+            authenticatedContent.style.display = 'none';
+        }
+        if (unauthenticatedContent) {
+            unauthenticatedContent.style.display = 'block';
+        }
+    }
+}
+
+// Function to load vehicles from Firebase
+function loadVehiclesFromFirebase() {
+    const allVehiclesContainer = document.getElementById('allVehicles');
+    const savedVehiclesContainer = document.getElementById('savedVehicles');
+    
+    // Show loading state
+    if (allVehiclesContainer) {
+        allVehiclesContainer.innerHTML = '<div class="loading">Loading vehicles...</div>';
+    }
+    if (savedVehiclesContainer) {
+        savedVehiclesContainer.innerHTML = '<div class="loading">Loading your saved vehicles...</div>';
+    }
+    
+// Check if Firebase is initialized through AuthManager
+if (AuthManager.isInitialized && AuthManager.db) {
+    // Get all vehicles from Firebase, ordered by listing date
+    AuthManager.db.collection("vehicleSubmissions").orderBy("submissionDate", "desc").get()
+
+        .then((querySnapshot) => {
+            const vehicles = [];
+            querySnapshot.forEach((doc) => {
+                vehicles.push({ id: doc.id, ...doc.data() });
+            });
+            
+            // Store vehicles in localStorage as fallback
+            localStorage.setItem('salvageHubAllVehicles', JSON.stringify(vehicles));
+            
+            // Display all vehicles
+            if (allVehiclesContainer) {
+                displayVehicles(vehicles, allVehiclesContainer);
+            }
+            
+            // Filter and display only user's saved vehicles
+            const userEmail = localStorage.getItem('userEmail');
+            if (userEmail && savedVehiclesContainer) {
+                const userVehicles = vehicles.filter(vehicle => 
+                    vehicle.sellerEmail === userEmail
+                );
+                displayVehicles(userVehicles, savedVehiclesContainer);
+            }
+        })
+        .catch((error) => {
+            console.error("Error getting vehicles: ", error);
+            // Fallback to localStorage
+            loadVehiclesFromLocalStorage();
+        });
+} else {
+    console.error("Firebase is not initialized");
+    // Fallback to localStorage
+    loadVehiclesFromLocalStorage();
+}
+}
+// Global variable to store the vehicle ID to be deleted
+let vehicleToDelete = null;
+
+function setupDeleteConfirmation() {
+    const modal = document.getElementById('confirmationModal');
+    const confirmBtn = document.getElementById('confirmDeleteBtn');
+    const cancelBtn = document.getElementById('cancelDeleteBtn');
+    console.log("Modal elements:", {modal, confirmBtn, cancelBtn});
+    // Add null checks
+    if (!modal || !confirmBtn || !cancelBtn) {
+        console.error("Modal elements not found");
+        return;
+    }
+    
+     confirmBtn.addEventListener('click', function() {
+    if (vehicleToDelete) {
+        deleteVehicleAndNotes(vehicleToDelete); // Updated function name
+    }
+    modal.style.display = 'none';
+});
+    cancelBtn.addEventListener('click', function() {
+        modal.style.display = 'none';
+        vehicleToDelete = null;
+    });
+    
+    // Close modal if clicked outside
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            modal.style.display = 'none';
+            vehicleToDelete = null;
+        }
+    });
+}
+
+// Function to show delete confirmation
+function showDeleteConfirmation(vehicleId) {
+    const modal = document.getElementById('confirmationModal');
+    vehicleToDelete = vehicleId;
+    modal.style.display = 'flex';
+}
+// Function to delete vehicle and all associated notes
+function deleteVehicleAndNotes(vehicleId) {
+    console.log(`Attempting to delete vehicle and notes: ${vehicleId}`);
+    
+    if (!AuthManager.isInitialized || !AuthManager.db) {
+        console.error("Firebase is not initialized");
+        alert("System error. Please refresh the page and try again.");
+        return;
+    }
+    
+    // Get the current user
+    const user = AuthManager.auth.currentUser;
+    if (!user) {
+        alert("You must be logged in to delete vehicles.");
+        return;
+    }
+    
+    console.log("Current user email:", user.email);
+    console.log("Is admin:", user.email === 'admin@gmail.com');
+    
+    // FIRST delete all notes associated with the vehicle
+    deleteAllVehicleNotes(vehicleId)
+        .then(() => {
+            console.log("Notes deletion completed, now deleting vehicle");
+            // THEN delete the vehicle document
+            return AuthManager.db.collection("vehicleSubmissions").doc(vehicleId).delete();
+        })
+        .then(() => {
+            console.log("Vehicle successfully deleted from Firebase");
+            
+            // Remove from localStorage cache
+            const allVehicles = JSON.parse(localStorage.getItem('salvageHubAllVehicles')) || [];
+            const updatedVehicles = allVehicles.filter(vehicle => vehicle.id !== vehicleId);
+            localStorage.setItem('salvageHubAllVehicles', JSON.stringify(updatedVehicles));
+            
+            // Remove from UI
+            const vehicleElement = document.querySelector(`.delete-btn[data-id="${vehicleId}"]`)?.closest('.vehicle-card');
+            if (vehicleElement) {
+                vehicleElement.remove();
+            }
+            
+            // Show success message
+            alert("Vehicle listing deleted successfully.");
+        })
+        .catch((error) => {
+            console.error("Error in delete process: ", error);
+            
+            if (error.code === 'permission-denied') {
+                alert("Permission denied. You don't have rights to delete this vehicle or its notes.");
+            } else {
+                alert("Error deleting vehicle. Please try again. Error: " + error.message);
+            }
+        });
+}
+
+// Function to delete all notes associated with a vehicle
+function deleteAllVehicleNotes(vehicleId) {
+    return new Promise((resolve, reject) => {
+        console.log("Attempting to delete notes for vehicle:", vehicleId);
+        
+        // Get the current user
+        const user = AuthManager.auth.currentUser;
+        if (!user) {
+            reject(new Error("User not authenticated"));
+            return;
+        }
+        
+        console.log("Current user:", user.email, "UID:", user.uid);
+        
+        // Get all notes for this vehicle
+        AuthManager.db.collection("vehicleNotes")
+            .where("vehicleId", "==", vehicleId)
+            .get()
+            .then((querySnapshot) => {
+                console.log(`Found ${querySnapshot.size} notes to delete`);
+                
+                if (querySnapshot.size === 0) {
+                    console.log("No notes found to delete");
+                    resolve();
+                    return;
+                }
+                
+                // Delete notes one by one
+                const deletePromises = [];
+                
+                querySnapshot.forEach((doc) => {
+                    const noteData = doc.data();
+                    console.log("Note to delete:", doc.id, "by user:", noteData.userId);
+                    
+                    // Admin can delete any note, users can only delete their own
+                    if (user.email === 'admin@gmail.com' || user.uid === noteData.userId) {
+                        console.log("User has permission to delete this note");
+                        deletePromises.push(doc.ref.delete());
+                    } else {
+                        console.warn(`Skipping note ${doc.id} - user doesn't have permission`);
+                    }
+                });
+                
+                if (deletePromises.length === 0) {
+                    console.log("No notes could be deleted due to permissions");
+                    resolve();
+                    return;
+                }
+                
+                // Wait for all delete operations to complete
+                return Promise.all(deletePromises);
+            })
+            .then(() => {
+                console.log(`All notes for vehicle ${vehicleId} processed`);
+                resolve();
+            })
+            .catch((error) => {
+                console.error("Error in deleteAllVehicleNotes: ", error);
+                reject(error);
+            });
+    });
+}
+
+
+// Function to delete all notes for a vehicle (optional cleanup)
+function deleteVehicleNotes(vehicleId) {
+    if (!AuthManager.isInitialized || !AuthManager.db) return;
+    
+    const user = AuthManager.auth.currentUser;
+    if (!user || user.email !== 'admin@gmail.com') return;
+    
+    // Admin can delete all notes for a vehicle
+    AuthManager.db.collection("vehicleNotes")
+        .where("vehicleId", "==", vehicleId)
+        .get()
+        .then((querySnapshot) => {
+            const batch = AuthManager.db.batch();
+            querySnapshot.forEach((doc) => {
+                batch.delete(doc.ref);
+            });
+            return batch.commit();
+        })
+        .then(() => {
+            console.log("All notes for vehicle deleted successfully");
+        })
+        .catch((error) => {
+            console.error("Error deleting vehicle notes: ", error);
+        });
+}
+
+
+
+
+// Function to attach delete event listeners
+function attachDeleteListeners() {
+    const deleteButtons = document.querySelectorAll('.delete-btn');
+    console.log(`Found ${deleteButtons.length} delete buttons`);
+    
+    deleteButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const vehicleId = this.getAttribute('data-id');
+            console.log(`Delete button clicked for vehicle ID: ${vehicleId}`);
+            showDeleteConfirmation(vehicleId);
+        });
+    });
+}
+
+
+
+
+
+// Fallback function to load vehicles from localStorage
+function loadVehiclesFromLocalStorage() {
+    const allVehicles = JSON.parse(localStorage.getItem('salvageHubAllVehicles')) || [];
+    const allVehiclesContainer = document.getElementById('allVehicles');
+    const savedVehiclesContainer = document.getElementById('savedVehicles');
+    
+    // Display all vehicles
+if (allVehiclesContainer) {
+    const filteredVehicles = allVehicles.filter(v => v.userEmail !== "anonymous@example.com");
+    displayVehicles(filteredVehicles, allVehiclesContainer);
+}
+
+
+    // Filter and display only user's saved vehicles
+    const userEmail = localStorage.getItem('userEmail');
+    if (userEmail && savedVehiclesContainer) {
+        const userVehicles = allVehicles.filter(vehicle => 
+            vehicle.sellerEmail === userEmail
+        );
+        displayVehicles(userVehicles, savedVehiclesContainer);
+    }
+}
+
+function displayVehicles(vehicles, container) {
+    if (!container) {
+        console.error("Container element not found");
+        return;
+    }
+
+    if (vehicles.length === 0) {
+        container.innerHTML = `
+            <div class="no-vehicles">
+                <i class="fas fa-car"></i>
+                <h3>No Vehicles Found</h3>
+                <p>No vehicles match your criteria.</p>
+            </div>
+        `;
+        return;
+    }
+
+    // Calculate pagination
+    const totalPages = Math.ceil(vehicles.length / itemsPerPage);
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = Math.min(startIndex + itemsPerPage, vehicles.length);
+    const paginatedVehicles = vehicles.slice(startIndex, endIndex);
+
+    container.innerHTML = '';
+
+  // Only display the vehicles for the current page - FIXED THIS PART
+    paginatedVehicles.forEach(vehicle => {
+        const vehicleCard = document.createElement('div');
+        vehicleCard.className = 'vehicle-card';
+
+        // Format timestamp -> only date (YYYY-MM-DD)
+        let formattedDate = '';
+        if (vehicle.timestamp) {
+            formattedDate = new Date(vehicle.timestamp).toISOString().split('T')[0];
+        }
+
+        // Check if current user is admin
+        const userEmail = localStorage.getItem('userEmail');
+        const isAdmin = userEmail === 'admin@gmail.com';
+ // DEBUG: Add these console logs
+console.log("User email:", userEmail);
+console.log("Vehicle seller email:", vehicle.sellerEmail);
+console.log("Is admin:", isAdmin); // Changed from isOwner to isAdmin
+console.log("Vehicle ID:", vehicle.id);
+
+
+// Only show delete button if user is admin
+const deleteButtonHTML = isAdmin ? 
+    `<button class="delete-btn" data-id="${vehicle.id}" title="Delete this vehicle">
+        <i class="fas fa-trash"></i> Delete
+    </button>` : '';
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        // Damage & parts lists (already handled in your code)
+        let bodyDamageHTML = '';
+        if (vehicle.bodyDamage && vehicle.bodyDamage.length > 0) {
+            bodyDamageHTML = `
+              <div class="damage-col">
+                <h4>Body Damage</h4>
+                <ul>
+                  ${vehicle.bodyDamage.map(d => `<li>${d.description} (${d.part})</li>`).join('')}
+                </ul>
+              </div>
+            `;
+        }
+
+
+    let majorDamageHTML = '';
+    if (vehicle.majorDamage && vehicle.majorDamage.length > 0) {
+        majorDamageHTML = `
+          <div class="damage-col">
+           <h4>Major Damage</h4>
+
+            <ul>
+              ${vehicle.majorDamage.map(d => `<li>${d.description} (${d.part})</li>`).join('')}
+            </ul>
+          </div>
+        `;
+    }
+
+    let missingPartsHTML = '';
+    if (vehicle.missingParts && vehicle.missingParts.length > 0) {
+        missingPartsHTML = `
+          <div class="damage-col">
+            <h4>Missing Parts</h4>
+
+            <ul>
+              ${vehicle.missingParts.map(p => `<li>${p.description || p.part}</li>`).join('')}
+            </ul>
+          </div>
+        `;
+    }
+
+vehicleCard.innerHTML = `
+<div class="vehicle-details">
+    <div class="vehicle-header">
+        <h2 class="vehicle-title">
+            ${vehicle.year} ${vehicle.make} ${vehicle.model} 
+            <span class="vehicle-id">(${vehicle.id})</span>
+        </h2>
+        <div class="vehicle-actions">
+            <span class="vehicle-date"><i class="fas fa-calendar-alt"></i> ${formattedDate}</span>
+            ${deleteButtonHTML}
+        </div>
+    </div>
+
+
+     <!-- Notes Section -->
+                <div class="notes-section">
+    <div class="notes-header">
+        <h4>My Notes</h4>
+        <button class="add-note-btn" onclick="openNotesModal('${vehicle.id}')">
+            <i class="fas fa-plus"></i> Add Note
+        </button>
+    </div>
+    <div id="notes-container-${vehicle.id}">
+        <div id="no-notes-${vehicle.id}" class="no-notes" style="display: block;">
+            No notes yet. Click "Add Note" to add one.
+        </div>
+        <div id="notes-list-${vehicle.id}" class="notes-list" style="display: none;"></div>
+    </div>
+</div>
+
+
+
+
+    <div class="vehicle-info">
+        ${vehicle.name ? `<span><i class="fas fa-user"></i> ${vehicle.name}</span>` : ''}
+        <span><i class="fas fa-id-card"></i> ${vehicle.location}</span>
+        <span><i class="fas fa-envelope"></i> ${vehicle.email || ''}</span>
+        <span><i class="fas fa-phone"></i> ${vehicle.contactNumber || ''}</span>
+    </div>
+
+    <p class="vehicle-specs">
+        <strong>Mileage:</strong> ${vehicle.mileage} 
+        <strong> | Title Status:</strong> ${vehicle.titleStatus} 
+        <strong> | Tire Condition:</strong> ${vehicle.tireCondition}
+    </p>
+
+    <p class="vehicle-specs">
+        <strong>Interior:</strong> ${vehicle.interiorCondition} 
+        <strong> | Engine:</strong> ${vehicle.engineCondition}
+    </p>
+
+    <div class="damage-row">
+        ${bodyDamageHTML}
+        ${majorDamageHTML}
+        ${missingPartsHTML}
+    </div>
+</div>
+`;
+	
+    container.appendChild(vehicleCard);
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	// LOAD NOTES FOR THIS VEHICLE AFTER THE CARD IS CREATED
+        loadNotesForVehicle(vehicle.id);
+});
+
+updatePaginationControls(totalPages);
+
+
+setTimeout(() => {
+    attachDeleteListeners();
+}, 100);
+}
+
+
+
+
+// Function to show vehicle details
+function showVehicleDetails(vehicle) {
+    // Create a modal or show details in an alert
+    alert(`Vehicle Details:
+Year: ${vehicle.year}
+Make: ${vehicle.make}
+Model: ${vehicle.model}
+VIN: ${vehicle.vin || 'Not provided'}
+Mileage: ${vehicle.mileage} miles
+Condition: ${vehicle.condition || 'Not specified'}
+Price: $${vehicle.price}
+Engine Condition: ${vehicle.engineCondition || 'Not specified'}
+Interior Condition: ${vehicle.interiorCondition || 'Not specified'}
+Tire Condition: ${vehicle.tireCondition || 'Not specified'}
+Listed by: ${vehicle.sellerEmail || 'Unknown'}`);
+}
+
+
+// Initialize notes functionality when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    setupDeleteConfirmation();
+    initializeNotes(); // Add this line
+});
+
+
+
+// Add this code after your existing JavaScript
+
+// Global variables to store filter data
+let allVehiclesData = [];
+let filteredVehicles = [];
+let availableMakes = [];
+let availableModels = [];
+
+// Initialize filter functionality - MODIFIED
+function initializeFilters() {
+    // Load vehicles data
+    loadVehiclesForFiltering();
+    
+    // Set up event listeners for filters - MODIFIED THESE LINES
+    document.getElementById('year-filter').addEventListener('change', () => filterVehicles(true));
+    document.getElementById('make-filter').addEventListener('change', () => filterVehicles(true));
+    document.getElementById('model-filter').addEventListener('change', () => filterVehicles(true));
+    document.getElementById('location-filter').addEventListener('input', debounce(() => filterVehicles(true), 300));
+    
+    // Apply filters button - MODIFIED THIS LINE
+    document.querySelector('.filter-btn').addEventListener('click', () => filterVehicles(true));
+}
+
+
+// Load vehicles data for filtering
+function loadVehiclesForFiltering() {
+    // Try to get from localStorage first
+    const storedVehicles = localStorage.getItem('salvageHubAllVehicles');
+    
+    if (storedVehicles) {
+        allVehiclesData = JSON.parse(storedVehicles);
+        populateYearFilter();
+        filterVehicles(true); // Reset to page 1 when first loading - MODIFIED THIS LINE
+    } else {
+        // If no data in localStorage, try to load from Firebase
+        if (AuthManager.isInitialized && AuthManager.db) {
+            AuthManager.db.collection("vehicleSubmissions").orderBy("submissionDate", "desc").get()
+                .then((querySnapshot) => {
+                    allVehiclesData = [];
+                    querySnapshot.forEach((doc) => {
+                        allVehiclesData.push({ id: doc.id, ...doc.data() });
+                    });
+                    
+                    // Store in localStorage for future use
+                    localStorage.setItem('salvageHubAllVehicles', JSON.stringify(allVehiclesData));
+                    
+                    populateYearFilter();
+                    filterVehicles(true); // Reset to page 1 when first loading - MODIFIED THIS LINE
+                })
+                .catch((error) => {
+                    console.error("Error getting vehicles for filtering: ", error);
+                });
+        }
+    }
+}
+
+// Populate year filter dropdown
+function populateYearFilter() {
+    const yearFilter = document.getElementById('year-filter');
+    
+    // Clear existing options (keeping the first "Select Year" option)
+    while (yearFilter.options.length > 1) {
+        yearFilter.remove(1);
+    }
+    
+    // Get unique years from vehicles data
+    const years = [...new Set(allVehiclesData.map(vehicle => vehicle.year))].sort((a, b) => b - a);
+    
+    // Add year options
+    years.forEach(year => {
+        const option = document.createElement('option');
+        option.value = year;
+        option.textContent = year;
+        yearFilter.appendChild(option);
+    });
+}
+
+// Update make filter based on selected year
+function updateMakeFilter() {
+    const yearFilter = document.getElementById('year-filter');
+    const makeFilter = document.getElementById('make-filter');
+    const modelFilter = document.getElementById('model-filter');
+    
+    const selectedYear = yearFilter.value;
+    
+    // Reset makes and models
+    makeFilter.innerHTML = '<option value="">Select Make</option>';
+    modelFilter.innerHTML = '<option value="">Select Model</option>';
+    makeFilter.disabled = true;
+    modelFilter.disabled = true;
+    
+    if (!selectedYear) {
+        // If no year selected, get all makes
+        availableMakes = [...new Set(allVehiclesData.map(vehicle => vehicle.make))].sort();
+    } else {
+        // Filter makes by selected year
+        availableMakes = [...new Set(
+            allVehiclesData
+                .filter(vehicle => vehicle.year == selectedYear)
+                .map(vehicle => vehicle.make)
+        )].sort();
+    }
+    
+    // Populate make filter
+    availableMakes.forEach(make => {
+        const option = document.createElement('option');
+        option.value = make;
+        option.textContent = make;
+        makeFilter.appendChild(option);
+    });
+    
+    makeFilter.disabled = false;
+    filterVehicles();
+}
+
+// Update model filter based on selected make
+function updateModelFilter() {
+    const yearFilter = document.getElementById('year-filter');
+    const makeFilter = document.getElementById('make-filter');
+    const modelFilter = document.getElementById('model-filter');
+    
+    const selectedYear = yearFilter.value;
+    const selectedMake = makeFilter.value;
+    
+    // Reset model filter
+    modelFilter.innerHTML = '<option value="">Select Model</option>';
+    modelFilter.disabled = true;
+    
+    if (!selectedMake) {
+        filterVehicles();
+        return;
+    }
+    
+    // Filter models based on selected year and make
+    let filteredVehicles = allVehiclesData;
+    
+    if (selectedYear) {
+        filteredVehicles = filteredVehicles.filter(vehicle => vehicle.year == selectedYear);
+    }
+    
+    filteredVehicles = filteredVehicles.filter(vehicle => vehicle.make === selectedMake);
+    
+    availableModels = [...new Set(filteredVehicles.map(vehicle => vehicle.model))].sort();
+    
+    // Populate model filter
+    availableModels.forEach(model => {
+        const option = document.createElement('option');
+        option.value = model;
+        option.textContent = model;
+        modelFilter.appendChild(option);
+    });
+    
+    modelFilter.disabled = false;
+    filterVehicles();
+}
+
+// Main filtering function - MODIFIED
+function filterVehicles(resetPage = true) {
+    // Only reset to page 1 when filters change, not when pagination changes
+    if (resetPage) {
+        currentPage = 1;
+    }
+    
+    const yearFilter = document.getElementById('year-filter');
+    const makeFilter = document.getElementById('make-filter');
+    const modelFilter = document.getElementById('model-filter');
+    const locationFilter = document.getElementById('location-filter');
+    
+    const selectedYear = yearFilter.value;
+    const selectedMake = makeFilter.value;
+    const selectedModel = modelFilter.value;
+    const locationQuery = locationFilter.value.trim().toLowerCase();
+    
+    // Start with all vehicles
+    filteredVehicles = [...allVehiclesData];
+    
+    // Apply filters
+    if (selectedYear) {
+        filteredVehicles = filteredVehicles.filter(vehicle => vehicle.year == selectedYear);
+    }
+    
+    if (selectedMake) {
+        filteredVehicles = filteredVehicles.filter(vehicle => vehicle.make === selectedMake);
+    }
+    
+    if (selectedModel) {
+        filteredVehicles = filteredVehicles.filter(vehicle => vehicle.model === selectedModel);
+    }
+    
+    if (locationQuery) {
+        filteredVehicles = filteredVehicles.filter(vehicle => 
+            vehicle.location && vehicle.location.toLowerCase().includes(locationQuery)
+        );
+    }
+    
+    // Display filtered vehicles
+    const allVehiclesContainer = document.getElementById('allVehicles');
+    if (allVehiclesContainer) {
+        displayVehicles(filteredVehicles, allVehiclesContainer);
+    }
+}
+
+
+
+
+
+
+
+
+// Debounce function to limit how often a function can be called
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+// Update your loadVehiclesFromFirebase function to call initializeFilters
+// Replace your existing loadVehiclesFromFirebase function with this:
+function loadVehiclesFromFirebase() {
+    const allVehiclesContainer = document.getElementById('allVehicles');
+    const savedVehiclesContainer = document.getElementById('savedVehicles');
+    
+    // Show loading state
+    if (allVehiclesContainer) {
+        allVehiclesContainer.innerHTML = '<div class="loading">Loading vehicles...</div>';
+    }
+    if (savedVehiclesContainer) {
+        savedVehiclesContainer.innerHTML = '<div class="loading">Loading your saved vehicles...</div>';
+    }
+    
+    // Check if Firebase is initialized through AuthManager
+    if (AuthManager.isInitialized && AuthManager.db) {
+        // Get all vehicles from Firebase, ordered by listing date
+        AuthManager.db.collection("vehicleSubmissions").orderBy("submissionDate", "desc").get()
+            .then((querySnapshot) => {
+                const vehicles = [];
+                querySnapshot.forEach((doc) => {
+                    vehicles.push({ id: doc.id, ...doc.data() });
+                });
+                
+                // Store vehicles in localStorage as fallback
+                localStorage.setItem('salvageHubAllVehicles', JSON.stringify(vehicles));
+                allVehiclesData = vehicles;
+                
+                // Initialize filters after data is loaded
+                initializeFilters();
+                
+                // Filter and display only user's saved vehicles
+                const userEmail = localStorage.getItem('userEmail');
+                if (userEmail && savedVehiclesContainer) {
+                    const userVehicles = vehicles.filter(vehicle => 
+                        vehicle.sellerEmail === userEmail
+                    );
+                    displayVehicles(userVehicles, savedVehiclesContainer);
+                }
+            })
+            .catch((error) => {
+                console.error("Error getting vehicles: ", error);
+                // Fallback to localStorage
+                loadVehiclesFromLocalStorage();
+            });
+    } else {
+        console.error("Firebase is not initialized");
+        // Fallback to localStorage
+        loadVehiclesFromLocalStorage();
+    }
+}
+
+// Also update your loadVehiclesFromLocalStorage function:
+function loadVehiclesFromLocalStorage() {
+    const storedVehicles = localStorage.getItem('salvageHubAllVehicles');
+    const allVehiclesContainer = document.getElementById('allVehicles');
+    const savedVehiclesContainer = document.getElementById('savedVehicles');
+    
+    if (storedVehicles) {
+        allVehiclesData = JSON.parse(storedVehicles);
+        
+        // Initialize filters after data is loaded
+        initializeFilters();
+        
+        // Filter and display only user's saved vehicles
+        const userEmail = localStorage.getItem('userEmail');
+        if (userEmail && savedVehiclesContainer) {
+            const userVehicles = allVehiclesData.filter(vehicle => 
+                vehicle.sellerEmail === userEmail
+            );
+            displayVehicles(userVehicles, savedVehiclesContainer);
+        }
+    } else {
+        // No data available
+        if (allVehiclesContainer) {
+            allVehiclesContainer.innerHTML = `
+                <div class="no-vehicles">
+                    <i class="fas fa-car"></i>
+                    <h3>No Vehicles Available</h3>
+                    <p>No vehicles have been listed yet.</p>
+                </div>
+            `;
+        }
+    }
+}
+
+
+
+function updatePaginationControls(totalPages) {
+    const paginationContainer = document.querySelector('.pagination');
+    if (!paginationContainer) return;
+    
+    paginationContainer.innerHTML = '';
+    
+    // Previous button - MODIFIED THIS LINE
+    if (currentPage > 1) {
+        const prevBtn = document.createElement('button');
+        prevBtn.className = 'pagination-btn';
+        prevBtn.innerHTML = '&laquo; Prev';
+        prevBtn.addEventListener('click', () => {
+            currentPage--;
+            filterVehicles(false); // Don't reset page when paginating
+        });
+        paginationContainer.appendChild(prevBtn);
+    }
+    
+    // Page numbers - MODIFIED THIS LINE
+    for (let i = 1; i <= totalPages; i++) {
+        const pageBtn = document.createElement('button');
+        pageBtn.className = `pagination-btn ${i === currentPage ? 'active' : ''}`;
+        pageBtn.textContent = i;
+        pageBtn.addEventListener('click', () => {
+            currentPage = i;
+            filterVehicles(false); // Don't reset page when paginating
+        });
+        paginationContainer.appendChild(pageBtn);
+    }
+    
+    // Next button - MODIFIED THIS LINE
+    if (currentPage < totalPages) {
+        const nextBtn = document.createElement('button');
+        nextBtn.className = 'pagination-btn';
+        nextBtn.innerHTML = 'Next &raquo;';
+        nextBtn.addEventListener('click', () => {
+            currentPage++;
+            filterVehicles(false); // Don't reset page when paginating
+        });
+        paginationContainer.appendChild(nextBtn);
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</script>
+
+<!-- Confirmation Modal -->
+<div id="confirmationModal" class="confirmation-modal">
+    <div class="modal-content">
+        <h3>Confirm Deletion</h3>
+        <p>Are you sure you want to delete this vehicle listing? This action cannot be undone.</p>
+        <div class="modal-buttons">
+            <button id="confirmDeleteBtn" class="confirm-btn">Yes, Delete</button>
+            <button id="cancelDeleteBtn" class="cancel-btn">Cancel</button>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+</html>

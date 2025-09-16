@@ -1,0 +1,182 @@
+/* sell.css */
+
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; } body { background-color: #f5f7f9; color: #333; line-height: 1.6; } .container { max-width: 1000px; margin: 0 auto; padding: 0 20px; } /* Main Content */ .main-content { padding: 40px 0; } .page-title { text-align: center; margin-bottom: 40px; color: #1a3a4a; font-size: 32px; position: relative; } .page-title::after { content: ''; display: block; width: 80px; height: 4px; background-color: #ffcc00; margin: 15px auto; } /* Form Styles */ .listing-form { background-color: white; padding: 30px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05); margin-bottom: 30px; } .form-section { margin-bottom: 40px; } .section-title { font-size: 22px; color: #1a3a4a; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #eee; } .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 25px; } .form-group { margin-bottom: 15px; position: relative; } .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #1a3a4a; } .form-group label.required::after { content: " *"; color: #ff6b6b; } .form-group select, .form-group input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 16px; background-color: white; appearance: none; -webkit-appearance: none; -moz-appearance: none; position: relative; z-index: 2; } .form-group select.error, .form-group input.error { border-color: #ff6b6b; box-shadow: 0 0 0 2px rgba(255, 107, 107, 0.2); } .error-message { color: #ff6b6b; font-size: 14px; margin-top: 5px; display: none; } .custom-select { position: relative; } .custom-select::after { content: "\f078"; font-family: "Font Awesome 6 Free"; font-weight: 900; position: absolute; right: 15px; top: 50%; transform: translateY(-50%); pointer-events: none; z-index: 1; color: #666; } .form-group input::placeholder { color: #aaa; } .divider { height: 1px; background-color: #ddd; margin: 30px 0; } /* Checkbox Groups */ .checkbox-group { margin-bottom: 25px; } .checkbox-group h4 { font-size: 18px; color: #1a3a4a; margin-bottom: 15px; } .checkbox-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; } .checkbox-item { display: flex; align-items: center; } .checkbox-item input { margin-right: 10px; width: 18px; height: 18px; } /* Compact dropdown styles */ .compact-dropdown { max-width: 250px; } /* Navigation Buttons */ .form-navigation { display: flex; justify-content: space-between; margin-top: 30px; } .nav-button { background-color: #1a3a4a; color: white; border: none; padding: 12px 25px; border-radius: 5px; font-size: 16px; font-weight: bold; cursor: pointer; transition: background-color 0.3s; } .nav-button:hover { background-color: #2c6c8c; } .nav-button.next { background-color: #ff6b6b; } .nav-button.next:hover { background-color: #ff5252; } .nav-button:disabled { background-color: #ccc; cursor: not-allowed; } /* Offer Assessment Styles */ #offerAssessment { display: none; } .offer-banner { background: linear-gradient(135deg, #3498db, #2c3e50); color: white; padding: 30px; text-align: center; border-radius: 10px; margin-bottom: 30px; } .offer-banner h1 { font-size: 28px; margin-bottom: 10px; } .offer-id { background: rgba(255, 255, 255, 0.2); display: inline-block; padding: 8px 16px; border-radius: 20px; font-size: 14px; margin-top: 10px; } .assessment-section { background-color: white; padding: 30px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05); margin-bottom: 30px; } .assessment-title { display: flex; align-items: center; margin-bottom: 20px; color: #1a3a4a; font-size: 20px; } .assessment-title i { margin-right: 10px; font-size: 24px; } .vehicle-info { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; } .info-item { margin-bottom: 15px; } .info-label { font-weight: 600; color: #7f8c8d; margin-bottom: 5px; } .info-value { font-size: 18px; } .condition-damaged { color: #e74c3c; font-weight: 600; } .guarantees { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; } .guarantee-item { display: flex; align-items: center; margin-bottom: 15px; } .guarantee-item i { color: #27ae60; margin-right: 10px; font-size: 20px; } .offer-breakdown { background: #f8f9fa; border-radius: 8px; padding: 20px; margin-top: 20px; } .breakdown-item { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #e0e0e0; } .breakdown-item:last-child { border-bottom: none; } .breakdown-desc { display: flex; align-items: center; } .breakdown-desc i { margin-right: 10px; color: #7f8c8d; } .positive { color: #27ae60; font-weight: 600; } .negative { color: #e74c3c; font-weight: 600; } .final-offer { text-align: center; padding: 30px; background: linear-gradient(135deg, #2ecc71, #27ae60); color: white; border-radius: 10px; margin: 30px 0; } .final-offer h2 { font-size: 18px; margin-bottom: 10px; font-weight: 500; } .final-offer .amount { font-size: 42px; font-weight: 700; margin: 10px 0; } .next-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 30px; } .step { background: #f8f9fa; padding: 20px; border-radius: 8px; text-align: center; } .step-number { background: #3498db; color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; font-weight: bold; } .step h3 { margin-bottom: 10px; color: #2c3e50; } .assessment-complete { text-align: center; padding: 20px; background: #f8f9fa; border-radius: 8px; margin-top: 20px; font-weight: 500; color: #7f8c8d; display: none; } /* Responsive Design */ @media (max-width: 768px) { .header-content { flex-direction: column; gap: 15px; } .nav-links { gap: 15px; flex-wrap: wrap; justify-content: center; } .form-row { grid-template-columns: 1fr; } .checkbox-grid { grid-template-columns: 1fr; } .form-navigation { flex-direction: column; gap: 15px; } .nav-button { width: 100%; } .compact-dropdown { max-width: 100%; } .vehicle-info, .guarantees, .next-steps { grid-template-columns: 1fr; } }
+
+
+
+
+
+
+
+
+
+
+
+
+   .offer-details {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.offer-header {
+    border-bottom: 2px solid #eee;
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+}
+
+.vehicle-summary, .price-breakdown, .total-offer {
+    margin-bottom: 25px;
+}
+
+.price-breakdown table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.price-breakdown td {
+    padding: 8px 5px;
+    border-bottom: 1px solid #eee;
+}
+
+.price-breakdown .total-row td {
+    border-top: 2px solid #ddd;
+    font-weight: bold;
+    padding-top: 15px;
+}
+
+.total-offer {
+    text-align: center;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.total-offer h2 {
+    color: #e74c3c;
+    margin-bottom: 10px;
+}
+
+.offer-actions {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 30px;
+}
+        /* Additional styles for damage assessment results */
+        .results-section {
+            display: none;
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+        
+        .damage-category {
+            margin-bottom: 25px;
+        }
+        
+        .damage-category h3 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        
+        .damage-category table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 10px;
+        }
+        
+        .damage-category th, .damage-category td {
+            padding: 8px 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .damage-category th {
+            background-color: #f2f2f2;
+            font-weight: 600;
+        }
+        
+        .subtotal {
+            text-align: right;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+        
+        .total-section {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #ddd;
+            text-align: center;
+        }
+        
+        .total-section h2 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .total-amount {
+            font-size: 32px;
+            font-weight: bold;
+            color: #e74c3c;
+            margin-bottom: 10px;
+        }
+        
+        .deduction-note {
+            color: #7f8c8d;
+            font-style: italic;
+        }
+        
+        .back-button {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            background-color: #95a5a6;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        .back-button:hover {
+            background-color: #7f8c8d;
+        }
+        
+        .form-navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        
+        .nav-button {
+            padding: 12px 24px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        .nav-button.previous {
+            background-color: #95a5a6;
+        }
+        
+        .nav-button.previous:hover {
+            background-color: #7f8c8d;
+        }
+        
+        .nav-button.next:hover {
+            background-color: #2980b9;
+        }
+        
+        .nav-button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }

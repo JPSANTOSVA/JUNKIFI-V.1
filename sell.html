@@ -1,0 +1,1162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sell Vehicle - JUNKIFI</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+   <link rel="stylesheet" href="sell.css">
+<script src="modelData.js"></script>
+
+</head>
+<body>
+<!-- Header (loaded from header.html) -->
+  <div id="header-placeholder"></div>
+
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script> <!-- ADD THIS -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+
+
+    <!-- Main Content -->
+    <div class="container main-content">
+        <h1 class="page-title">List Your Vehicle</h1>
+        
+        <!-- Listing Form -->
+        <form class="listing-form" id="vehicleForm">
+            <!-- Vehicle Information Section -->
+            <div class="form-section">
+                <h2 class="section-title">Vehicle Information</h2>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="year" class="required">Year</label>
+                        <div class="custom-select">
+                            <select id="year" required>
+                              
+                            </select>
+                        </div>
+                        <div class="error-message" id="year-error">Please select a year</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="make" class="required">Make</label>
+                        <div class="custom-select">
+                            <select id="make" required>
+                               
+                            </select>
+                        </div>
+                        <div class="error-message" id="make-error">Please select a make</div>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="model" class="required">Model</label>
+                        <div class="custom-select">
+                            <select id="model" required>
+                         
+                            </select>
+                        </div>
+                        <div class="error-message" id="model-error">Please select a model</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="vin" class="required">VIN</label>
+                        <input type="text" id="vin" placeholder="17-character VIN" required>
+                        <div class="error-message" id="vin-error">Please enter a valid VIN</div>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="mileage" class="required">Mileage</label>
+                        <input type="number" id="mileage" placeholder="Enter mileage" value="120000" required>
+                        <div class="error-message" id="mileage-error">Please enter mileage</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="title-status" class="required">Title Status</label>
+                        <div class="custom-select">
+                            <select id="title-status" required>
+                                <option value="">Select Title Status</option>
+                                <option>Clean</option>
+                                <option selected>Salvage</option>
+                                <option>Rebuilt</option>
+                                <option>Other</option>
+                            </select>
+                        </div>
+                        <div class="error-message" id="title-status-error">Please select title status</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="divider"></div>
+            
+            <!-- Damage Assessment Section -->
+            <div class="form-section">
+                <h2 class="section-title">Damage Assessment</h2>
+                
+                <div class="form-group compact-dropdown">
+                    <label for="engine-condition" class="required">Engine Condition</label>
+                    <div class="custom-select">
+                        <select id="engine-condition" required>
+                            <option value="">Select Engine Condition</option>
+                            <option value="Does not start">Does not start</option>
+                            <option value="Runs poorly">Runs poorly</option>
+                            <option value="Runs well" selected>Runs well</option>
+                            <option value="Unknown">Unknown</option>
+                        </select>
+                    </div>
+                    <div class="error-message" id="engine-condition-error">Please select engine condition</div>
+                </div>
+                
+                <div class="checkbox-group">
+                    <h4>Body Damage (select all that apply)</h4>
+                    <div class="checkbox-grid">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="front-bumper" checked>
+                            <label for="front-bumper">Front bumper damage</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="rear-bumper">
+                            <label for="rear-bumper">Rear bumper damage</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="hood" checked>
+                            <label for="hood">Hood damage</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="roof">
+                            <label for="roof">Roof damage</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="door" checked>
+                            <label for="door">Door damage</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="fender" checked>
+                            <label for="fender">Fender damage</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="quarter-panel">
+                            <label for="quarter-panel">Quarter panel damage</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="windshield">
+                            <label for="windshield">Windshield cracked/broken</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="side-windows">
+                            <label for="side-windows">Side windows broken</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="rear-window">
+                            <label for="rear-window">Rear window broken</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="paint" checked>
+                            <label for="paint">Paint scratches/chips</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="rust">
+                            <label for="rust">Rust damage</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="dents" checked>
+                            <label for="dents">Dents and dings</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Combined Interior and Tire Condition -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <h4>Interior Condition</h4>
+                        <div class="custom-select">
+                            <select id="interior-condition">
+                                <option value="Fair - noticeable wear">Fair - noticeable wear</option>
+                                <option value="Poor - significant damage" selected>Poor - significant damage</option>
+                                <option value="Good - minimal wear">Good - minimal wear</option>
+                                <option value="Excellent - like new">Excellent - like new</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <h4>Tire Condition</h4>
+                        <div class="custom-select">
+                            <select id="tire-condition">
+                                <option value="Some tires worn">Some tires worn</option>
+                                <option value="All tires worn">All tires worn</option>
+                                <option value="Tires in good condition" selected>Tires in good condition</option>
+                                <option value="Missing tires">Missing tires</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="checkbox-group">
+                    <h4>Specific Damage Types</h4>
+                    <div class="checkbox-grid">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="accident" checked>
+                            <label for="accident">Vehicle has accident damage</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="flood">
+                            <label for="flood">Vehicle has flood damage</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="fire">
+                            <label for="fire">Vehicle has fire damage</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="checkbox-group">
+                    <h4>Missing Parts (select all that apply)</h4>
+                    <div class="checkbox-grid">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="engine">
+                            <label for="engine">Engine</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="transmission">
+                            <label for="transmission">Transmission</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="wheels">
+                            <label for="wheels">Wheels/Tires</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="battery">
+                            <label for="battery">Battery</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="catalytic">
+                            <label for="catalytic">Catalytic converter</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="seats">
+                            <label for="seats">Seats</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="steering">
+                            <label for="steering">Steering wheel</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="airbags">
+                            <label for="airbags">Airbags</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="radio">
+                            <label for="radio">Radio/Electronics</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="mirrors">
+                            <label for="mirrors">Mirrors</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="lights">
+                            <label for="lights">Lights/Headlights</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="doors">
+                            <label for="doors">Doors</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="hood-missing">
+                            <label for="hood-missing">Hood</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="trunk">
+                            <label for="trunk">Trunk lid</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Form Navigation -->
+            <div class="form-navigation">
+                <button type="button" class="nav-button previous">Previous</button>
+                <button type="button" class="nav-button next" id="calculateBtn">Calculate Deductions</button>
+                <button type="button" class="nav-button next" id="getOfferBtn" style="display:none;">Get Your Offer</button>
+            </div>
+        </form>
+        
+        <!-- Results Section -->
+        <div id="resultsSection" class="results-section">
+            <h2 class="section-title">Damage Deduction Calculation</h2>
+            
+            <div class="damage-category">
+                <h3>1. Missing Parts</h3>
+                <table id="missing-parts-table">
+                    <tr>
+                        <th>Damage</th>
+                        <th>Deduction ($)</th>
+                    </tr>
+                    <!-- Rows will be added dynamically -->
+                </table>
+                <div class="subtotal">Subtotal: $<span id="missing-parts-subtotal">0</span></div>
+            </div>
+            
+            <div class="damage-category">
+                <h3>2. Body Damage</h3>
+                <table id="body-damage-table">
+                    <tr>
+                        <th>Damage</th>
+                        <th>Deduction ($)</th>
+                    </tr>
+                    <!-- Rows will be added dynamically -->
+                </table>
+                <div class="subtotal">Subtotal: $<span id="body-damage-subtotal">0</span></div>
+            </div>
+            
+            <div class="damage-category">
+                <h3>3. Engine / Mechanical</h3>
+                <table id="engine-table">
+                    <tr>
+                        <th>Damage</th>
+                        <th>Deduction ($)</th>
+                    </tr>
+                    <!-- Rows will be added dynamically -->
+                </table>
+                <div class="subtotal">Subtotal: $<span id="engine-subtotal">0</span></div>
+            </div>
+            
+            <div class="damage-category">
+                <h3>4. Title / Legal</h3>
+                <table id="title-table">
+                    <tr>
+                        <th>Damage</th>
+                        <th>Deduction ($)</th>
+                    </tr>
+                    <!-- Rows will be added dynamically -->
+                </table>
+                <div class="subtotal">Subtotal: $<span id="title-subtotal">0</span></div>
+            </div>
+            
+            <div class="damage-category">
+                <h3>5. Major Damage (Flood/Fire/Accident)</h3>
+                <table id="major-damage-table">
+                    <tr>
+                        <th>Damage</th>
+                        <th>Deduction ($)</th>
+                    </tr>
+                    <!-- Rows will be added dynamically -->
+                </table>
+                <div class="subtotal">Subtotal: $<span id="major-damage-subtotal">0</span></div>
+            </div>
+            
+            <div class="damage-category">
+                <h3>6. Interior / Electrical</h3>
+                <table id="interior-table">
+                    <tr>
+                        <th>Damage</th>
+                        <th>Deduction ($)</th>
+                    </tr>
+                    <!-- Rows will be added dynamically -->
+                </table>
+                <div class="subtotal">Subtotal: $<span id="interior-subtotal">0</span></div>
+            </div>
+            
+            <div class="damage-category">
+                <h3>7. Tires / Wheels</h3>
+                <table id="tires-table">
+                    <tr>
+                        <th>Damage</th>
+                        <th>Deduction ($)</th>
+                    </tr>
+                    <!-- Rows will be added dynamically -->
+                </table>
+                <div class="subtotal">Subtotal: $<span id="tires-subtotal">0</span></div>
+            </div>
+            
+            <div class="total-section">
+                <h2>Total Damage Deduction</h2>
+                <div class="total-amount">$<span id="total-deduction">0</span></div>
+                <p class="deduction-note">This amount will be deducted from the base value of your vehicle</p>
+            </div>
+            
+            <button type="button" class="back-button" id="backButton">Back to Form</button>
+            <button type="button" class="nav-button next" id="proceedToOfferBtn" style="display:block; margin:20px auto;">Proceed to Offer</button>
+        </div>
+        
+        <!-- Offer Assessment Section -->
+<div id="offerAssessment" style="display:none;">
+    <div class="form-section">
+        <h2 class="section-title">Your Vehicle Offer</h2>
+        
+        <div class="offer-details">
+            <div class="offer-header">
+                <h3>Offer Details</h3>
+                <p>Offer valid until: <span id="validUntil">2024-01-25</span></p>
+            </div>
+            
+            <div class="vehicle-summary">
+                <h4>Vehicle Information</h4>
+                <p><span id="offerYearValue">2020</span> <span id="offerMake">Honda</span> <span id="offerModel">Civic</span></p>
+                <p>Mileage: <span id="offerMileage">120,000</span> miles</p>
+                <p>Condition: <span id="offerCondition">SALVAGE</span></p>
+            </div>
+            
+            <div class="price-breakdown">
+                <h4>Price Breakdown</h4>
+                <table>
+                    <tr>
+                        <td>Base Value:</td>
+                        <td>$<span id="baseValue">1500</span></td>
+                    </tr>
+                    <tr>
+                        <td>Engine Condition Bonus:</td>
+                        <td>$<span id="engineBonus"></span></td>
+                    </tr>
+                    <tr>
+                        <td>Year Factor:</td>
+                        <td>$<span id="yearFactor"></span></td>
+                    </tr>
+                    <tr>
+                        <td>Damage Deductions:</td>
+                        <td>-$<span id="damagePenalty">250</span></td>
+                    </tr>
+                    <tr class="total-row">
+                        <td><strong>Final Offer:</strong></td>
+                        <td><strong>$<span id="finalOffer">1950</span></strong></td>
+                    </tr>
+                </table>
+            </div>
+            
+            <div class="total-offer">
+                <h2>Your Final Offer: $<span id="finalOfferValue">1950</span></h2>
+                <p class="offer-note">This offer is valid for 30 days from <span id="offerYear">2024</span></p>
+            </div>
+            
+            <div class="offer-actions">
+                <button type="button" class="nav-button" id="acceptOfferBtn">Accept Offer</button>
+                <button type="button" class="nav-button previous" id="declineOfferBtn">Decline Offer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+  <!-- Footer (loaded from footer.html) -->
+<div id="footer-placeholder"></div>
+ 
+<script>
+// Load header first
+
+
+
+fetch("header.html")
+    .then(res => res.text())
+    .then(data => {
+        const headerPlaceholder = document.getElementById("header-placeholder");
+        headerPlaceholder.innerHTML = data;
+
+        // Process scripts from header
+        const scripts = headerPlaceholder.querySelectorAll("script");
+        scripts.forEach(oldScript => {
+            const newScript = document.createElement("script");
+            if (oldScript.src) {
+                newScript.src = oldScript.src;
+            } else {
+                newScript.textContent = oldScript.textContent;
+            }
+            document.body.appendChild(newScript);
+        });
+        
+        // Load year options FIRST
+        fetch("years.html")
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById("year").innerHTML = '<option value="">Select Year</option>' + data;
+                console.log("Years loaded");
+                
+                // Then load make options
+                return fetch("makes.html");
+            })
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById("make").innerHTML = '<option value="">Select Make</option>' + data;
+                console.log("Makes loaded");
+                
+           
+            })
+            .catch(error => {
+                console.error("Error loading dropdown data:", error);
+            });
+    })
+    .catch(error => console.error("Error loading header:", error));
+
+// Load footer
+fetch("footer.html")
+    .then(response => response.text())
+    .then(data => {
+        document.getElementById("footer-placeholder").innerHTML = data;
+    });
+
+function setupModelDropdown() {
+    console.log("Setting up model dropdown");
+    
+    const makeSelect = document.getElementById('make');
+    const modelSelect = document.getElementById('model');
+
+    if (!makeSelect || !modelSelect) {
+        console.error("Make or Model select elements not found");
+        return;
+    }
+
+    // Function to populate models based on selected make
+    function populateModels(selectedMake) {
+        // Clear existing options except the first one
+        modelSelect.innerHTML = '<option value="">Select Model</option>';
+        
+        // Check if modelData exists and has the selected make
+        if (window.modelData && window.modelData[selectedMake]) {
+            window.modelData[selectedMake].forEach(model => {
+                const option = document.createElement('option');
+                option.value = model;
+                option.textContent = model;
+                modelSelect.appendChild(option);
+            });
+            console.log("Models populated for:", selectedMake);
+        } else {
+            console.warn("No model data found for make:", selectedMake);
+            // Add a generic option if no models found
+            const option = document.createElement('option');
+            option.value = "other";
+            option.textContent = "Other";
+            modelSelect.appendChild(option);
+        }
+    }
+
+    // Event listener for make selection change
+    makeSelect.addEventListener('change', function() {
+        const selectedMake = this.value;
+        console.log("Make selected:", selectedMake);
+        if (selectedMake) {
+            populateModels(selectedMake);
+        }
+        validateField(this);
+        updateGetOfferButton();
+    });
+
+    // Initialize with first make if available
+    if (makeSelect.options.length > 1 && makeSelect.options[1].value) {
+        const firstMake = makeSelect.options[1].value;
+        console.log("Initializing with make:", firstMake);
+        populateModels(firstMake);
+    } else {
+        console.log("No make options available for initialization");
+    }
+    
+    console.log("Model dropdown setup complete");
+}
+
+        // Add custom dropdown arrow to all selects
+        document.querySelectorAll('select').forEach(select => {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'custom-select';
+            select.parentNode.insertBefore(wrapper, select);
+            wrapper.appendChild(select);
+        });
+
+        // Navigation buttons
+        const prevButton = document.querySelector('.nav-button.previous');
+        const calculateBtn = document.getElementById('calculateBtn');
+        const getOfferBtn = document.getElementById('getOfferBtn');
+        const proceedToOfferBtn = document.getElementById('proceedToOfferBtn');
+        const backButton = document.getElementById('backButton');
+        const vehicleForm = document.getElementById('vehicleForm');
+        const resultsSection = document.getElementById('resultsSection');
+        const offerAssessment = document.getElementById('offerAssessment');
+        const assessmentComplete = document.getElementById('assessmentComplete');
+        
+        // Required fields
+        const requiredFields = [
+            'year', 'make', 'model', 'vin', 'mileage', 'title-status', 'engine-condition'
+        ];
+        
+        // Add change events to required fields for validation
+        requiredFields.forEach(field => {
+            const element = document.getElementById(field);
+            if (element) {
+                element.addEventListener('change', function() {
+                    validateField(this);
+                    updateGetOfferButton();
+                });
+            }
+        });
+        
+        // Add input events for text fields
+        document.getElementById('vin').addEventListener('input', function() {
+            validateField(this);
+            updateGetOfferButton();
+        });
+        
+        document.getElementById('mileage').addEventListener('input', function() {
+            validateField(this);
+            updateGetOfferButton();
+        });
+        
+        prevButton.addEventListener('click', function() {
+            alert('Would navigate to previous step in the form.');
+        });
+        
+        // Show results when Calculate button is clicked
+        calculateBtn.addEventListener('click', function() {
+            // Validate all required fields
+            let isValid = true;
+            
+            requiredFields.forEach(field => {
+                const element = document.getElementById(field);
+                if (element && !validateField(element)) {
+                    isValid = false;
+                }
+            });
+            
+            if (!isValid) {
+                alert('Please fill in all required fields correctly.');
+                return;
+            }
+            
+            calculateDeductions();
+            vehicleForm.style.display = 'none';
+            resultsSection.style.display = 'block';
+        });
+
+        // Proceed to offer after damage assessment
+        proceedToOfferBtn.addEventListener('click', function() {
+            resultsSection.style.display = 'none';
+            
+            // Check if offer assessment section exists
+            if (offerAssessment) {
+                offerAssessment.style.display = 'block';
+                generateOffer(); // This is the correct place to call generateOffer()
+            } else {
+                console.error('Offer assessment section not found');
+                // Fallback: show an alert or redirect
+                alert('Unable to generate offer. Please try again.');
+            }
+        });      
+        
+        getOfferBtn.addEventListener('click', function() {
+            // Generate offer based on form data
+            generateOffer();
+            
+            // Hide form and show offer assessment
+            vehicleForm.style.display = 'none';
+            offerAssessment.style.display = 'block';
+            
+            // Scroll to top of offer assessment
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+        
+        // Damage calculation functions
+        function calculateDeductions() {
+            // Reset all tables
+            resetTables();
+            
+            // Calculate deductions for each category
+            calculateMissingParts();
+            calculateBodyDamage();
+            calculateEngineMechanical();
+            calculateTitleLegal();
+            calculateMajorDamage();
+            calculateInteriorElectrical();
+            calculateTiresWheels();
+            
+            // Calculate total deduction
+            calculateTotalDeduction();
+        }
+        
+        function resetTables() {
+            // Clear all table rows except headers
+            const tables = document.querySelectorAll('#resultsSection table');
+            tables.forEach(table => {
+                const rows = table.querySelectorAll('tr');
+                for (let i = 1; i < rows.length; i++) {
+                    table.removeChild(rows[i]);
+                }
+            });
+            
+            // Reset all subtotals
+            const subtotals = document.querySelectorAll('.subtotal span');
+            subtotals.forEach(span => {
+                span.textContent = '0';
+            });
+        }
+        
+        function calculateMissingParts() {
+            const table = document.getElementById('missing-parts-table');
+            let subtotal = 0;
+            
+            // Check each missing part
+            if (document.getElementById('engine').checked) {
+                addRow(table, 'Engine Missing', 500);
+                subtotal += 500;
+            }
+            
+            if (document.getElementById('wheels').checked) {
+                addRow(table, 'Wheels Missing', 200);
+                subtotal += 200;
+            }
+            
+            if (document.getElementById('catalytic').checked) {
+                addRow(table, 'Catalytic Converter Missing', 100);
+                subtotal += 100;
+            }
+            
+            if (document.getElementById('transmission').checked) {
+                addRow(table, 'Transmission Missing', 75);
+                subtotal += 75;
+            }
+            
+            if (document.getElementById('battery').checked) {
+                addRow(table, 'Battery Missing', 50);
+                subtotal += 50;
+            }
+            
+            if (document.getElementById('airbags').checked) {
+                addRow(table, 'Airbags Missing', 0);
+                // No addition to subtotal
+            }
+            
+            // Update subtotal
+            document.getElementById('missing-parts-subtotal').textContent = subtotal;
+        }
+        
+        function calculateBodyDamage() {
+            const table = document.getElementById('body-damage-table');
+            let subtotal = 0;
+            let severeDamage = false;
+            let moderateDamage = false;
+            let minorDamage = false;
+            let rustDamage = false;
+            
+            // Count body damage checkboxes
+            const bodyDamageCheckboxes = [
+                'front-bumper', 'rear-bumper', 'hood', 'roof', 
+                'door', 'fender', 'quarter-panel', 'windshield',
+                'side-windows', 'rear-window', 'paint', 'rust', 'dents'
+            ];
+            
+            let damageCount = 0;
+            bodyDamageCheckboxes.forEach(id => {
+                if (document.getElementById(id).checked) {
+                    damageCount++;
+                }
+            });
+            
+            // Determine damage severity based on count
+            if (damageCount >= 5) {
+                severeDamage = true;
+                addRow(table, 'Body Damage - Severe', 100);
+                subtotal += 100;
+            } else if (damageCount >= 3) {
+                moderateDamage = true;
+                addRow(table, 'Body Damage - Moderate', 50);
+                subtotal += 50;
+            } else if (damageCount > 0) {
+                minorDamage = true;
+                addRow(table, 'Body Damage - Minor', 25);
+                subtotal += 25;
+            }
+            
+            // Check for rust damage
+            if (document.getElementById('rust').checked) {
+                rustDamage = true;
+                addRow(table, 'Rust Damage', 25);
+                subtotal += 25;
+            }
+            
+            // Update subtotal
+            document.getElementById('body-damage-subtotal').textContent = subtotal;
+        }
+        
+        function calculateEngineMechanical() {
+            const table = document.getElementById('engine-table');
+            let subtotal = 0;
+            
+            // Check engine condition
+            const engineCondition = document.getElementById('engine-condition').value;
+            
+            if (engineCondition === 'Does not start') {
+                addRow(table, 'Engine - Does Not Start', 100);
+                subtotal += 100;
+            } else if (engineCondition === 'Runs poorly') {
+                addRow(table, 'Engine - Runs Rough', 50);
+                subtotal += 50;
+            }
+            
+            // Check transmission issues
+            if (document.getElementById('transmission').checked) {
+                addRow(table, 'Transmission Issues', 0);
+                // No addition to subtotal
+            }
+            
+            // Update subtotal
+            document.getElementById('engine-subtotal').textContent = subtotal;
+        }
+        
+        function calculateTitleLegal() {
+            const table = document.getElementById('title-table');
+            let subtotal = 0;
+            
+            // For this example, we'll assume no title issues since there are no inputs for this
+            // In a real application, you would check the appropriate inputs
+            
+            // Update subtotal
+            document.getElementById('title-subtotal').textContent = subtotal;
+        }
+        
+        function calculateMajorDamage() {
+            const table = document.getElementById('major-damage-table');
+            let subtotal = 0;
+            
+            // Check accident damage
+            if (document.getElementById('accident').checked) {
+                // Count body damage to determine severity
+                const bodyDamageCheckboxes = [
+                    'front-bumper', 'rear-bumper', 'hood', 'roof', 
+                    'door', 'fender', 'quarter-panel', 'windshield',
+                    'side-windows', 'rear-window', 'paint', 'rust', 'dents'
+                ];
+                
+                let damageCount = 0;
+                bodyDamageCheckboxes.forEach(id => {
+                    if (document.getElementById(id).checked) {
+                        damageCount++;
+                    }
+                });
+                
+                if (damageCount >= 5) {
+                    addRow(table, 'Accident Damage - Total Loss', 100);
+                    subtotal += 100;
+                } else if (damageCount > 0) {
+                    addRow(table, 'Accident Damage - Minor', 25);
+                    subtotal += 25;
+                }
+            }
+            
+            // Check flood damage
+            if (document.getElementById('flood').checked) {
+                addRow(table, 'Flood Damage', 150);
+                subtotal += 150;
+            }
+            
+            // Check fire damage
+            if (document.getElementById('fire').checked) {
+                addRow(table, 'Fire Damage', 200);
+                subtotal += 200;
+            }
+            
+            // Update subtotal
+            document.getElementById('major-damage-subtotal').textContent = subtotal;
+        }
+        
+        function calculateInteriorElectrical() {
+            const table = document.getElementById('interior-table');
+            let subtotal = 0;
+            
+            // Check interior condition
+            const interiorCondition = document.getElementById('interior-condition').value;
+            
+            if (interiorCondition === 'Poor - significant damage') {
+                addRow(table, 'Interior - Poor Condition', 25);
+                subtotal += 25;
+            }
+            
+            // Check for electrical issues (simplified for this example)
+            const electricalItems = ['radio', 'lights'];
+            let electricalIssues = false;
+            
+            electricalItems.forEach(id => {
+                if (document.getElementById(id).checked) {
+                    electricalIssues = true;
+                }
+            });
+            
+            if (electricalIssues) {
+                addRow(table, 'Electrical Issues', 20);
+                subtotal += 20;
+            }
+            
+            // Update subtotal
+            document.getElementById('interior-subtotal').textContent = subtotal;
+        }
+        
+        function calculateTiresWheels() {
+            const table = document.getElementById('tires-table');
+            let subtotal = 0;
+            
+            // Check tire condition
+            const tireCondition = document.getElementById('tire-condition').value;
+            
+            if (tireCondition === 'Missing tires') {
+                addRow(table, 'Flat Tires', 25);
+                subtotal += 25;
+            } else if (tireCondition === 'All tires worn' || tireCondition === 'Some tires worn') {
+                addRow(table, 'Tires - Poor Condition', 0);
+                // No addition to subtotal
+            }
+            
+            // Update subtotal
+            document.getElementById('tires-subtotal').textContent = subtotal;
+        }
+        
+        function calculateTotalDeduction() {
+            const subtotals = [
+                parseInt(document.getElementById('missing-parts-subtotal').textContent),
+                parseInt(document.getElementById('body-damage-subtotal').textContent),
+                parseInt(document.getElementById('engine-subtotal').textContent),
+                parseInt(document.getElementById('title-subtotal').textContent),
+                parseInt(document.getElementById('major-damage-subtotal').textContent),
+                parseInt(document.getElementById('interior-subtotal').textContent),
+                parseInt(document.getElementById('tires-subtotal').textContent)
+            ];
+            
+            const total = subtotals.reduce((sum, value) => sum + value, 0);
+            document.getElementById('total-deduction').textContent = total;
+        }
+        
+        function addRow(table, damage, deduction) {
+            const row = table.insertRow();
+            const cell1 = row.insertCell(0);
+            const cell2 = row.insertCell(1);
+            
+            cell1.textContent = damage;
+            cell2.textContent = deduction;
+        }
+        
+        // Function to validate a field
+        function validateField(field) {
+            const errorElement = document.getElementById(`${field.id}-error`);
+            
+            if (!field.value.trim()) {
+                field.classList.add('error');
+                errorElement.style.display = 'block';
+                return false;
+            } else {
+                field.classList.remove('error');
+                errorElement.style.display = 'none';
+                
+                // Additional validation for specific fields
+                if (field.id === 'vin' && field.value.length !== 17) {
+                    field.classList.add('error');
+                    errorElement.textContent = 'VIN must be 17 characters';
+                    errorElement.style.display = 'block';
+                    return false;
+                }
+                
+                if (field.id === 'mileage' && (field.value < 0 || field.value > 1000000)) {
+                    field.classList.add('error');
+                    errorElement.textContent = 'Please enter a valid mileage';
+                    errorElement.style.display = 'block';
+                    return false;
+                }
+                
+                return true;
+            }
+        }
+        
+        // Function to update Get Offer button state
+        function updateGetOfferButton() {
+            let allValid = true;
+            
+            requiredFields.forEach(field => {
+                const element = document.getElementById(field);
+                if (element && !element.value.trim()) {
+                    allValid = false;
+                }
+                
+                // Additional validation for specific fields
+                if (field === 'vin' && element.value.length !== 17) {
+                    allValid = false;
+                }
+                
+                if (field === 'mileage' && (element.value < 0 || element.value > 1000000)) {
+                    allValid = false;
+                }
+            });
+            
+            getOfferBtn.disabled = !allValid;
+        }
+        
+        function saveVehicleToFirebase() {
+            // Use the AuthManager to check authentication
+            AuthManager.requireAuth().then((isAuthenticated) => {
+                if (!isAuthenticated) return;
+
+                // Get current user
+                const user = AuthManager.auth.currentUser;
+                
+                // Get form values
+                const vehicleData = {
+                    year: document.getElementById('year').value,
+                    make: document.getElementById('make').value,
+                    model: document.getElementById('model').value,
+                    vin: document.getElementById('vin').value,
+                    mileage: document.getElementById('mileage').value,
+                    titleStatus: document.getElementById('title-status').value,
+                    engineCondition: document.getElementById('engine-condition').value,
+                    interiorCondition: document.getElementById('interior-condition').value,
+                    tireCondition: document.getElementById('tire-condition').value,
+                    price: document.getElementById('finalOfferValue').textContent,
+                    condition: 'Salvage',
+                    userId: user.uid,
+                    userEmail: user.email,
+                    listingDate: new Date().toISOString(),
+                    status: 'available'
+					
+                };
+
+                // Get damage information
+                const damageInfo = {
+                    bodyDamage: getCheckedDamage('front-bumper', 'rear-bumper', 'hood', 'roof', 'door', 'fender', 'quarter-panel', 'windshield', 'side-windows', 'rear-window', 'paint', 'rust', 'dents'),
+                    missingParts: getCheckedDamage('engine', 'transmission', 'wheels', 'battery', 'catalytic', 'seats', 'steering', 'airbags', 'radio', 'mirrors', 'lights', 'doors', 'hood-missing', 'trunk'),
+                    majorDamage: getCheckedDamage('accident', 'flood', 'fire')
+                };
+
+                // Combine all data
+                const completeVehicleData = { ...vehicleData, ...damageInfo };
+
+                // Save to Firebase
+                AuthManager.db.collection("vehicles").add(completeVehicleData)
+                    .then((docRef) => {
+                        console.log("Vehicle saved with ID: ", docRef.id);
+                        alert('Your vehicle has been listed successfully!');
+                        window.location.href = 'browse.html';
+                    })
+                    .catch((error) => {
+                        console.error("Error saving vehicle: ", error);
+                        alert('Error saving vehicle. Please try again.');
+                    });
+            });
+        }
+
+        // Helper function to get checked damage items
+        function getCheckedDamage(...ids) {
+            const damageItems = [];
+            ids.forEach(id => {
+                const checkbox = document.getElementById(id);
+                if (checkbox && checkbox.checked) {
+                    damageItems.push({
+                        part: id,
+                        description: checkbox.nextElementSibling?.textContent || id
+                    });
+                }
+            });
+            return damageItems;
+        }
+        
+        // Function to generate offer based on form data
+        function generateOffer() {
+            const year = document.getElementById('year').value;
+            const make = document.getElementById('make').value;
+            const model = document.getElementById('model').value;
+            const mileage = document.getElementById('mileage').value;
+            const titleStatus = document.getElementById('title-status').value;
+            const engineCondition = document.getElementById('engine-condition').value;
+            
+            // Get total damage deduction
+            const damageDeduction = parseInt(document.getElementById('total-deduction').textContent) || 0;
+            
+            // Calculate offer based on vehicle data
+            let baseValue = 1500; // Higher base value since we're subtracting damage
+            let engineBonus = 0;
+            let yearFactor = 0;
+            
+            // Engine condition bonus
+if (engineCondition === 'Runs well') {
+    engineBonus = 0; // Changed from 500
+} else if (engineCondition === 'Runs poorly') {
+    engineBonus = 0; // Changed from 200
+}
+            
+            // Year factor (newer cars get higher value)
+const currentYear = new Date().getFullYear();
+const carAge = currentYear - parseInt(year);
+yearFactor = 0; // Changed from Math.max(0, 1000 - (carAge * 50))
+
+
+
+            // Calculate final offer (base + bonuses - damage)
+            const finalOffer = Math.max(100, baseValue + engineBonus + yearFactor - damageDeduction);
+            
+            // SAFETY CHECK: Only update elements if they exist
+            const updateElement = (id, value) => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.textContent = value;
+                } else {
+                    console.warn(`Element with ID ${id} not found`);
+                }
+            };
+            
+            // Update offer details with safety checks
+            updateElement('offerYear', currentYear + 1);
+            updateElement('validUntil', (currentYear + 1) + '-01-25');
+            updateElement('offerYearValue', year);
+            updateElement('offerMake', make);
+            updateElement('offerModel', model);
+            updateElement('offerMileage', Number(mileage).toLocaleString());
+            updateElement('offerCondition', titleStatus.toUpperCase());
+            
+            updateElement('baseValue', baseValue);
+            updateElement('engineBonus', engineBonus);
+            updateElement('yearFactor', yearFactor);
+            updateElement('damagePenalty', damageDeduction);
+            updateElement('finalOffer', finalOffer);
+            updateElement('finalOfferValue', finalOffer);
+        }
+        
+        // Initialize button state
+        updateGetOfferButton();
+        
+        // Update model options based on make selection
+        const makeSelect = document.getElementById('make');
+        const modelSelect = document.getElementById('model');
+        
+        makeSelect.addEventListener('change', function() {
+            // Clear existing options
+            modelSelect.innerHTML = '<option value="">Select Model</option>';
+            
+            // Add models based on selected make
+            const selectedMake = this.value;
+            if (modelData[selectedMake]) {
+                modelData[selectedMake].forEach(model => {
+                    const option = document.createElement('option');
+                    option.value = model;
+                    option.textContent = model;
+                    modelSelect.appendChild(option);
+                });
+            }
+            
+            // Validate the field and update button state
+            validateField(modelSelect);
+            updateGetOfferButton();
+        });
+        
+        // Add event listener for Accept Offer button
+document.getElementById('acceptOfferBtn').addEventListener('click', function() {
+    // First generate the offer to ensure all data is calculated
+    generateOffer();
+    
+    // Then save to Firebase
+    saveVehicleToFirebase();
+});
+
+        // Add event listener for Decline Offer button
+        document.getElementById('declineOfferBtn').addEventListener('click', function() {
+            // Go back to the form
+            offerAssessment.style.display = 'none';
+            vehicleForm.style.display = 'block';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,337 @@
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7f9;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Header Styles */
+        header {
+            background: linear-gradient(135deg, #1a3a4a 0%, #2c6c8c 100%);
+            color: white;
+            padding: 20px 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 25px;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        .nav-links a:hover {
+            color: #ffcc00;
+        }
+        
+     
+        
+        /* Main Content */
+        .main-content {
+            padding: 40px 0;
+        }
+        
+        .page-title {
+            text-align: center;
+            margin-bottom: 40px;
+            color: #1a3a4a;
+            font-size: 32px;
+            position: relative;
+        }
+        
+        .page-title::after {
+            content: '';
+            display: block;
+            width: 80px;
+            height: 4px;
+            background-color: #ffcc00;
+            margin: 15px auto;
+        }
+        
+        /* Hero Section */
+        .hero-section {
+            background: linear-gradient(135deg, #2c6c8c 0%, #1a3a4a 100%);
+            color: white;
+            padding: 50px;
+            border-radius: 10px;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+        
+        .hero-section h1 {
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+        
+        .hero-section p {
+            font-size: 18px;
+            max-width: 800px;
+            margin: 0 auto 30px;
+        }
+        
+        .hero-contact {
+            background-color: rgba(255, 255, 255, 0.2);
+            display: inline-block;
+            padding: 15px 30px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        
+        .hero-contact a {
+            color: white;
+            text-decoration: none;
+            display: block;
+            margin: 5px 0;
+        }
+        
+        .hero-contact i {
+            margin-right: 10px;
+        }
+        
+        /* Benefits Section */
+        .benefits-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        .benefit-card {
+            background-color: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            text-align: center;
+        }
+        
+        .benefit-icon {
+            font-size: 40px;
+            color: #2c6c8c;
+            margin-bottom: 20px;
+        }
+        
+        .benefit-card h3 {
+            color: #1a3a4a;
+            margin-bottom: 15px;
+        }
+        
+        /* Form Section */
+        .form-section {
+            background-color: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 40px;
+        }
+        
+        .form-title {
+            text-align: center;
+            color: #1a3a4a;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #1a3a4a;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #2c6c8c;
+            box-shadow: 0 0 0 2px rgba(44, 108, 140, 0.2);
+        }
+        
+        .submit-btn {
+            background-color: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 5px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            display: block;
+            margin: 30px auto 0;
+            transition: background-color 0.3s;
+            width: 200px;
+        }
+        
+        .submit-btn:hover {
+            background-color: #ff5252;
+        }
+        
+        /* FAQ Section */
+        .faq-section {
+            background-color: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            text-align: center;
+        }
+        
+        .faq-section h2 {
+            color: #1a3a4a;
+            margin-bottom: 20px;
+        }
+        
+        .faq-section p {
+            margin-bottom: 30px;
+            color: #666;
+        }
+        
+        .contact-btn {
+            background-color: #2c6c8c;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .contact-btn:hover {
+            background-color: #1a3a4a;
+        }
+        
+      
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .nav-links {
+                gap: 15px;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .hero-section {
+                padding: 30px 20px;
+            }
+            
+            .form-section {
+                padding: 25px;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Success Message */
+        .success-message {
+            display: none;
+            background-color: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+            text-align: center;
+        }
+        
+        /* Error Message */
+        .error-message {
+            display: none;
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+            text-align: center;
+        }
+        
+        /* Loading Spinner */
+        .spinner {
+            display: none;
+            margin: 20px auto;
+            text-align: center;
+        }
+        
+        .spinner i {
+            font-size: 24px;
+            color: #2c6c8c;
+        }
+        
+        /* Password strength indicator */
+        .password-strength {
+            margin-top: 5px;
+            height: 5px;
+            border-radius: 3px;
+            transition: all 0.3s ease;
+        }
+        
+        .strength-weak {
+            background-color: #ff4d4d;
+            width: 33%;
+        }
+        
+        .strength-medium {
+            background-color: #ffcc00;
+            width: 66%;
+        }
+        
+        .strength-strong {
+            background-color: #00cc66;
+            width: 100%;
+        }
+		
+
+
+

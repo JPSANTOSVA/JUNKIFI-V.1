@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In - JUNKIFI</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="Dashboard.css">
+    
+    <!-- Add Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+
+</head>
+<body>
+    <!-- Header Placeholder -->
+    <div id="header-placeholder"></div>
+
+    <!-- Main Content -->
+    <div class="container main-content">
+        <!-- Sign In Form -->
+        <div class="form-section" id="signinFormSection">
+            <h2 class="form-title">Sign In to Your Account</h2>
+            
+            <form id="signinForm">
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" placeholder="Enter your email address" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" placeholder="Enter your password" required>
+                </div>
+                
+                <button type="submit" class="submit-btn">Sign In</button>
+                
+                <div class="spinner" id="loadingSpinner">
+                    <i class="fas fa-spinner fa-spin"></i> Signing you in...
+                </div>
+                
+                <div id="successMessage" class="success-message">
+                    <i class="fas fa-check-circle"></i> Successfully signed in! Redirecting...
+                </div>
+                
+                <div id="errorMessage" class="error-message">
+                    <i class="fas fa-exclamation-circle"></i> <span id="errorText"></span>
+                </div>
+                
+                <div class="form-footer">
+                    <p>Don't have an account? <a href="signup.html">Sign up here</a></p>
+                    <p><a href="forgot-password.html">Forgot your password?</a></p>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Dashboard Content (hidden by default) -->
+        <div class="dashboard" id="dashboardSection" style="display: none;">
+            <div class="dashboard-header">
+                <h1 class="welcome-message">Welcome back, <span id="userName">User</span>!</h1>
+                <p>Here's what's happening with your account today.</p>
+            </div>
+            
+            <div class="dashboard-stats">
+                <div class="stat-card">
+                    <div class="stat-number"></div>
+                    <div class="stat-label">Vehicles Viewed</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number"></div>
+                    <div class="stat-label">Saved Vehicles</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number"></div>
+                    <div class="stat-label">Active Listings</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number"></div>
+                    <div class="stat-label">Messages</div>
+                </div>
+            </div>
+            
+            <div class="dashboard-actions">
+                <div class="action-card">
+                    <div class="action-icon">
+                        <i class="fas fa-car"></i>
+                    </div>
+                    <h3 class="action-title">Browse Inventory</h3>
+                    <p class="action-description">Explore our extensive collection of salvage vehicles from trusted partners.</p>
+                    <button class="action-button" onclick="window.location.href='browse.html'">Browse Now</button>
+                </div>
+                
+                <div class="action-card">
+                    <div class="action-icon">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <h3 class="action-title">Sell a Vehicle</h3>
+                    <p class="action-description">List your salvage vehicle and connect with potential buyers nationwide.</p>
+                    <button class="action-button" onclick="window.location.href='sell.html'">List Vehicle</button>
+                </div>
+                
+                <div class="action-card">
+                    <div class="action-icon">
+                        <i class="fas fa-user-friends"></i>
+                    </div>
+                    <h3 class="action-title">Account Settings</h3>
+                    <p class="action-description">Manage your profile, preferences, and notification settings.</p>
+                    <button class="action-button" id="accountSettingsButton">Manage Account</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer Placeholder -->
+    <div id="footer-placeholder"></div>
+
+    <script>
+        // Firebase configuration - MUST MATCH your auth-manager.js
+        const firebaseConfig = {
+            apiKey: "AIzaSyDZHK5TEyMVdpQ2FNR1NY-9lpud5z8v2bc",
+            authDomain: "junkifi-products.firebaseapp.com",
+            projectId: "junkifi-products",
+            storageBucket: "junkifi-products.firebasestorage.app",
+            messagingSenderId: "191420309176",
+            appId: "1:191420309176:web:20503f2a23140312de9e4d",
+            measurementId: "G-L9XB09VTLJ"
+        };
+
+        // Initialize Firebase
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // Function to show dashboard
+        function showDashboard(user) {
+            document.getElementById('signinFormSection').style.display = 'none';
+            document.getElementById('dashboardSection').style.display = 'block';
+            
+            // Display user's name or email
+            if (user) {
+                const displayName = user.displayName || user.email.split('@')[0];
+                document.getElementById('userName').textContent = displayName;
+            }
+        }
+
+        // Function to show sign in form
+        function showSignInForm() {
+            document.getElementById('signinFormSection').style.display = 'block';
+            document.getElementById('dashboardSection').style.display = 'none';
+            document.getElementById('signinForm').reset();
+        }
+
+  
+        // Form submission handler
+        document.getElementById('signinForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Hide previous messages
+            document.getElementById('successMessage').style.display = 'none';
+            document.getElementById('errorMessage').style.display = 'none';
+            
+            // Show loading spinner
+            document.getElementById('loadingSpinner').style.display = 'block';
+            
+            // Get form values
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            // Sign in with Firebase Authentication
+            auth.signInWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    // Signed in successfully
+                    const user = userCredential.user;
+
+                    // Save login state
+                    localStorage.setItem('isLoggedIn', 'true');
+                    localStorage.setItem('userEmail', user.email);
+
+                    // Show success message
+                    document.getElementById('loadingSpinner').style.display = 'none';
+                    document.getElementById('successMessage').style.display = 'block';
+
+                    // Show dashboard after a brief delay
+                    setTimeout(() => {
+                        showDashboard(user);
+                    }, 1500);
+                })
+                .catch((error) => {
+                    // Hide loading spinner
+                    document.getElementById('loadingSpinner').style.display = 'none';
+                    
+                    // Handle errors
+                    const errorCode = error.code;
+                    let errorMessage = error.message;
+                    
+                    // More user-friendly error messages
+                    if (errorCode === 'auth/user-not-found') {
+                        errorMessage = 'No account found with this email address.';
+                    } else if (errorCode === 'auth/wrong-password') {
+                        errorMessage = 'Incorrect password. Please try again.';
+                    } else if (errorCode === 'auth/invalid-email') {
+                        errorMessage = 'The email address is not valid.';
+                    } else if (errorCode === 'auth/user-disabled') {
+                        errorMessage = 'This account has been disabled. Please contact support.';
+                    }
+                    
+                    document.getElementById('errorText').textContent = errorMessage;
+                    document.getElementById('errorMessage').style.display = 'block';
+                });
+        });
+
+        // Check authentication state on page load
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                showDashboard(user);
+                localStorage.setItem('isLoggedIn', 'true');
+                localStorage.setItem('userEmail', user.email);
+            } else {
+                showSignInForm();
+                localStorage.removeItem('isLoggedIn');
+                localStorage.removeItem('userEmail');
+            }
+        });
+
+      fetch("header.html")
+    .then(res => res.text())
+    .then(data => {
+        const headerPlaceholder = document.getElementById("header-placeholder");
+        headerPlaceholder.innerHTML = data;
+
+        // Process scripts from header
+        const scripts = headerPlaceholder.querySelectorAll("script");
+        scripts.forEach(oldScript => {
+            // Skip auth-manager.js if already loaded
+            if (oldScript.src && oldScript.src.includes('auth-manager.js')) {
+                if (typeof AuthManager !== 'undefined') {
+                    console.log('Skipping duplicate auth-manager.js load');
+                    return;
+                }
+            }
+            
+            const newScript = document.createElement("script");
+            if (oldScript.src) {
+                newScript.src = oldScript.src;
+            } else {
+                newScript.textContent = oldScript.textContent;
+            }
+            document.body.appendChild(newScript);
+        });
+        
+        // Wait for everything to load, then setup dropdown
+        setTimeout(() => {
+            if (typeof setupLogoutDropdown === 'function') {
+                setupLogoutDropdown();
+            }
+            
+            // Also check auth state
+            if (typeof AuthManager !== 'undefined') {
+                AuthManager.checkAuthState();
+            }
+        }, 500);
+    })
+    .catch(error => console.error("Error loading header:", error));
+
+        // Load footer
+        fetch("footer.html")
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById("footer-placeholder").innerHTML = data;
+            });
+
+        // Remove the year/make loading code - it's not needed on dashboard
+        // This was causing errors because those dropdowns don't exist here
+    </script>
+</body>
+</html>

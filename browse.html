@@ -1,0 +1,610 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browse Vehicles - JUNKIFI</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+	<link rel="stylesheet" href="browse.css">
+	
+	
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+
+
+	
+	
+	
+	
+</head>
+<body>
+<!-- Header Placeholder -->
+<div id="header-placeholder"></div>
+
+<!-- Firebase SDKs -->
+
+<!-- Main Content -->
+<div class="container main-content">
+    <!-- Content for authenticated users -->
+    <div id="authenticated-content" style="display: none;">
+        <h1 class="page-title">Browse Available Vehicles</h1>
+        
+        <!-- Filter Section -->
+        <div class="filter-section">
+            <h2 class="filter-title">Filter Vehicles</h2>
+            <div class="filter-form">
+            
+                <div class="form-group">
+                    <label for="year-filter">Year</label>
+                    <select id="year-filter">
+                        <option value="">Select Year</option>
+                        <!-- Years will be populated by JavaScript -->
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="make-filter">Make</label>
+                    <select id="make-filter" disabled>
+                        <option value="">Select Make</option>
+                        <!-- Makes will be populated based on year selection -->
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="model-filter">Model</label>
+                    <select id="model-filter" disabled>
+                        <option value="">Select Model</option>
+                        <!-- Models will be populated based on make selection -->
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="location-filter">Location</label>
+                    <input type="text" id="location-filter" placeholder="ZIP Code">
+                </div>
+                
+                <button class="filter-btn">Apply Filters</button>
+            </div>
+        </div>
+        
+        <!-- All Vehicles Section -->
+        <h2 class="saved-vehicles-header">All Available Vehicles</h2>
+        <div class="vehicle-listings" id="allVehicles">
+            <!-- All vehicles will be displayed here dynamically -->
+        </div>
+   
+        <!-- Saved Vehicles Section -->
+        <div id="savedVehiclesSection">
+            <h2 class="saved-vehicles-header">Your Saved Vehicles</h2>
+            <div class="vehicle-listings" id="savedVehicles">
+                <!-- Saved vehicles will be displayed here dynamically -->
+            </div>
+        </div>
+        
+        <!-- Pagination -->
+        <div class="pagination">
+            <button class="pagination-btn active">1</button>
+            <button class="pagination-btn">2</button>
+            <button class="pagination-btn">3</button>
+            <button class="pagination-btn">Next</button>
+        </div>
+    </div>
+    
+    <!-- Content for unauthenticated users -->
+    <div id="unauthenticated-content" style="display: none;">
+        <div class="login-prompt">
+            <i class="fas fa-lock"></i>
+            <h2>Authentication Required</h2>
+            <p>You need to be logged in to browse our vehicle inventory.</p>
+            <a href="signin.html" class="login-btn">Sign In</a>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Bid Modal -->
+<!--
+<div id="bidModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Place Your Bid</h2>
+        <div id="bidVehicleInfo"></div>
+        <div class="form-group">
+            <label for="bidAmount">Bid Amount ($)</label>
+            <input type="number" id="bidAmount" min="0" step="0.01" placeholder="Enter your bid amount">
+        </div>
+        <button id="submitBid" class="bid-submit-btn">Submit Bid</button>
+        
+       
+        <div class="bid-history">
+            <h3>Bid History</h3>
+            <div id="bidHistoryContainer">
+                <p class="no-bids">No bids yet. Be the first to bid!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+-->
+
+<div id="footer-placeholder"></div>
+
+<script>
+// Load header and footer
+fetch("header.html")
+  .then(res => res.text())
+  .then(data => {
+    const headerPlaceholder = document.getElementById("header-placeholder");
+    headerPlaceholder.innerHTML = data;
+
+    // Run any <script> tags from header.html
+    const scripts = headerPlaceholder.querySelectorAll("script");
+    scripts.forEach(oldScript => {
+      const newScript = document.createElement("script");
+      if (oldScript.src) {
+        newScript.src = oldScript.src;
+      } else {
+        newScript.textContent = oldScript.textContent;
+      }
+      document.body.appendChild(newScript);
+    });
+    
+    // Wait for AuthManager to be available
+    const checkAuthManager = setInterval(() => {
+	console.log('Browse page loaded');
+	console.log('AuthManager defined:', typeof AuthManager !== 'undefined');
+      if (typeof AuthManager !== 'undefined') {
+	  console.log('AuthManager.auth defined:', typeof AuthManager.auth !== 'undefined');
+  console.log('AuthManager.signOut defined:', typeof AuthManager.signOut === 'function');
+        clearInterval(checkAuthManager);
+        
+        // Check auth state and update UI
+        AuthManager.checkAuthState().then(isLoggedIn => {
+          updateUIForAuthState(isLoggedIn);
+          
+          // Load vehicles only if user is authenticated
+          if (isLoggedIn) {
+            loadVehiclesFromFirebase();
+          }
+        }).catch(error => {
+          console.error("Error checking auth state:", error);
+          updateUIForAuthState(false);
+        });
+      }
+    }, 100);
+  })
+  .catch(error => console.error("Error loading header:", error));
+
+// Load footer
+fetch("footer.html")
+  .then(response => response.text())
+  .then(data => {
+    document.getElementById("footer-placeholder").innerHTML = data;
+  });
+
+// Function to check authentication status and update UI accordingly
+function updateUIForAuthState(isLoggedIn) {
+    const authenticatedContent = document.getElementById('authenticated-content');
+    const unauthenticatedContent = document.getElementById('unauthenticated-content');
+    
+    if (isLoggedIn) {
+        // User is logged in - show vehicle browsing content
+        if (authenticatedContent) {
+            authenticatedContent.style.display = 'block';
+        }
+        if (unauthenticatedContent) {
+            unauthenticatedContent.style.display = 'none';
+        }
+    } else {
+        // User is not logged in - show login prompt
+        if (authenticatedContent) {
+            authenticatedContent.style.display = 'none';
+        }
+        if (unauthenticatedContent) {
+            unauthenticatedContent.style.display = 'block';
+        }
+    }
+}
+
+// Function to load vehicles from Firebase
+function loadVehiclesFromFirebase() {
+    const allVehiclesContainer = document.getElementById('allVehicles');
+    const savedVehiclesContainer = document.getElementById('savedVehicles');
+    
+    // Show loading state
+    if (allVehiclesContainer) {
+        allVehiclesContainer.innerHTML = '<div class="loading">Loading vehicles...</div>';
+    }
+    if (savedVehiclesContainer) {
+        savedVehiclesContainer.innerHTML = '<div class="loading">Loading your saved vehicles...</div>';
+    }
+    
+// Check if Firebase is initialized through AuthManager
+if (AuthManager.isInitialized && AuthManager.db) {
+    // Get all vehicles from Firebase, ordered by listing date
+    AuthManager.db.collection("vehicles").orderBy("listingDate", "desc").get()
+        .then((querySnapshot) => {
+            const vehicles = [];
+            querySnapshot.forEach((doc) => {
+                vehicles.push({ id: doc.id, ...doc.data() });
+            });
+            
+            // Store vehicles in localStorage as fallback
+            localStorage.setItem('salvageHubAllVehicles', JSON.stringify(vehicles));
+            
+            // Display all vehicles
+            if (allVehiclesContainer) {
+                displayVehicles(vehicles, allVehiclesContainer);
+            }
+            
+            // Filter and display only user's saved vehicles
+            const userEmail = localStorage.getItem('userEmail');
+            if (userEmail && savedVehiclesContainer) {
+                const userVehicles = vehicles.filter(vehicle => 
+                    vehicle.sellerEmail === userEmail
+                );
+                displayVehicles(userVehicles, savedVehiclesContainer);
+            }
+        })
+        .catch((error) => {
+            console.error("Error getting vehicles: ", error);
+            // Fallback to localStorage
+            loadVehiclesFromLocalStorage();
+        });
+} else {
+    console.error("Firebase is not initialized");
+    // Fallback to localStorage
+    loadVehiclesFromLocalStorage();
+}
+}
+
+// Fallback function to load vehicles from localStorage
+function loadVehiclesFromLocalStorage() {
+    const allVehicles = JSON.parse(localStorage.getItem('salvageHubAllVehicles')) || [];
+    const allVehiclesContainer = document.getElementById('allVehicles');
+    const savedVehiclesContainer = document.getElementById('savedVehicles');
+    
+    if (allVehiclesContainer) {
+        displayVehicles(allVehicles, allVehiclesContainer);
+    }
+    
+    // Filter and display only user's saved vehicles
+    const userEmail = localStorage.getItem('userEmail');
+    if (userEmail && savedVehiclesContainer) {
+        const userVehicles = allVehicles.filter(vehicle => 
+            vehicle.sellerEmail === userEmail
+        );
+        displayVehicles(userVehicles, savedVehiclesContainer);
+    }
+}
+
+
+// Function to display vehicles
+function displayVehicles(vehicles, container) {
+    if (!container) {
+        console.error("Container element not found");
+        return;
+    }
+    
+    if (vehicles.length === 0) {
+        container.innerHTML = `
+            <div class="no-vehicles">
+                <i class="fas fa-car"></i>
+                <h3>No Vehicles Found</h3>
+                <p>No vehicles match your criteria.</p>
+            </div>
+        `;
+        return;
+    }
+    
+    container.innerHTML = '';
+    
+    vehicles.forEach(vehicle => {
+        const vehicleCard = document.createElement('div');
+        vehicleCard.className = 'vehicle-card';
+        
+        // Generate body damage list HTML
+        let bodyDamageHTML = '';
+        if (vehicle.bodyDamage && vehicle.bodyDamage.length > 0) {
+            bodyDamageHTML = `
+                <div class="damage-section">
+                    <div class="damage-title">Body Damage:</div>
+                    <ul class="damage-list">
+                        ${vehicle.bodyDamage.map(damage => 
+                            `<li class="damage-item">${damage.description}</li>`
+                        ).join('')}
+                    </ul>
+                </div>
+            `;
+        }
+        
+        // Generate major damage list HTML
+        let majorDamageHTML = '';
+        if (vehicle.majorDamage && vehicle.majorDamage.length > 0) {
+            majorDamageHTML = `
+                <div class="damage-section">
+                    <div class="damage-title">Major Damage:</div>
+                    <ul class="damage-list">
+                        ${vehicle.majorDamage.map(damage => 
+                            `<li class="damage-item">${damage.description}</li>`
+                        ).join('')}
+                    </ul>
+                </div>
+            `;
+        }
+        
+        // Generate missing parts list HTML - FIXED
+        let missingPartsHTML = '';
+        if (vehicle.missingParts && vehicle.missingParts.length > 0) {
+            missingPartsHTML = `
+                <div class="damage-section">
+                    <div class="damage-title">Missing Parts:</div>
+                    <ul class="damage-list">
+                        ${vehicle.missingParts.map(part => 
+                            `<li class="damage-item">${part.description || part.part}</li>`
+                        ).join('')}
+                    </ul>
+                </div>
+            `;
+        } else {
+            missingPartsHTML = `
+                <div class="damage-section">
+                    <div class="damage-title">Missing Parts:</div>
+                    <p>No parts reported missing</p>
+                </div>
+            `;
+        }
+        
+        // Determine status badge class
+        const statusClass = vehicle.status === 'available' ? 'status-available' : 'status-sold';
+        const statusText = vehicle.status === 'available' ? 'Available' : 'Sold';
+vehicleCard.innerHTML = `
+  <div class="vehicle-details">
+    <!-- Title section -->
+    <div class="vehicle-title-section">
+      <h3 class="vehicle-title">
+        ${vehicle.year} ${vehicle.make} ${vehicle.model}
+        <span class="title-spacer"></span>
+        <span class="title-details">
+          <span class="customer-info-inline">
+            <i class="fas fa-map-marker-alt"></i> Customer Location: ${vehicle.location || ''}
+          </span>
+          <span class="bid-info-text">
+            <i class="fas fa-info-circle"></i> Bid Info
+          </span>
+          <span class="bid-details-inline">
+            <i class="fas fa-gavel"></i> Bid Details: $${Number(vehicle.price).toLocaleString()}
+          </span>
+        </span>
+      </h3>
+      
+      <!-- VIN placed directly below the title without extra spacing -->
+      <div class="vin-container">
+        <span class="vin-label">VIN:</span> ${vehicle.vin || 'N/A'}
+      </div>
+    </div>
+    
+    <!-- All vehicle details in one line -->
+    <div class="vehicle-info-grid single-line-details">
+      <div class="info-item">
+        <span class="label">Mileage:</span> ${Number(vehicle.mileage).toLocaleString()} miles
+      </div>
+      <div class="info-item">
+        <span class="label">Title Status:</span> ${vehicle.titleStatus}
+      </div>
+      <div class="info-item">
+        <span class="label">Condition:</span> ${vehicle.condition}
+      </div>
+    </div>
+    
+    <div class="vehicle-specs">
+      <div class="spec-item">
+        <i class="fas fa-tachometer-alt"></i> Engine: ${vehicle.engineCondition}
+      </div>
+      <div class="spec-item">
+        <i class="fas fa-chair"></i> Interior: ${vehicle.interiorCondition}
+      </div>
+      <div class="spec-item">
+        <i class="fas fa-tire"></i> Tires: ${vehicle.tireCondition}
+      </div>
+    </div>
+    
+    ${bodyDamageHTML}
+    ${majorDamageHTML}
+    ${missingPartsHTML}
+  </div>
+`;
+        
+        // Add the vehicle card to the container
+        container.appendChild(vehicleCard);
+    });
+}
+
+
+
+
+// Function to show vehicle details
+function showVehicleDetails(vehicle) {
+    // Create a modal or show details in an alert
+    alert(`Vehicle Details:
+Year: ${vehicle.year}
+Make: ${vehicle.make}
+Model: ${vehicle.model}
+VIN: ${vehicle.vin || 'Not provided'}
+Mileage: ${vehicle.mileage} miles
+Condition: ${vehicle.condition || 'Not specified'}
+Price: $${vehicle.price}
+Engine Condition: ${vehicle.engineCondition || 'Not specified'}
+Interior Condition: ${vehicle.interiorCondition || 'Not specified'}
+Tire Condition: ${vehicle.tireCondition || 'Not specified'}
+Listed by: ${vehicle.sellerEmail || 'Unknown'}`);
+}
+
+// Function to open bid modal
+function openBidModal(vehicle) {
+    const modal = document.getElementById('bidModal');
+    const vehicleInfo = document.getElementById('bidVehicleInfo');
+    const bidAmount = document.getElementById('bidAmount');
+    const closeBtn = document.querySelector('.close');
+    
+    // Set vehicle info
+    vehicleInfo.innerHTML = `
+        <div class="bid-vehicle-info">
+            <h3>${vehicle.year} ${vehicle.make} ${vehicle.model}</h3>
+            <p>Current Price: $${vehicle.price || 'N/A'}</p>
+        </div>
+    `;
+    
+    // Clear previous bid amount
+    bidAmount.value = '';
+    
+    // Show modal
+    modal.style.display = 'block';
+    
+    // Load bid history for this vehicle
+    loadBidHistory(vehicle.id);
+    
+    // Close modal when clicking on X
+    closeBtn.onclick = function() {
+        modal.style.display = 'none';
+    }
+    
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = 'none';
+        }
+    }
+    
+    // Handle bid submission
+    const submitBid = document.getElementById('submitBid');
+    submitBid.onclick = function() {
+        const amount = parseFloat(bidAmount.value);
+        if (isNaN(amount) || amount <= 0) {
+            alert('Please enter a valid bid amount.');
+            return;
+        }
+        
+        // Save bid to Firebase
+        saveBidToFirebase(vehicle.id, amount);
+    }
+}
+
+// Function to save bid to Firebase
+function saveBidToFirebase(vehicleId, amount) {
+    const user = AuthManager.auth.currentUser;
+    
+    if (!user) {
+        alert('Please sign in to place a bid.');
+        return;
+    }
+    
+    // Create bid data
+    const bidData = {
+        vehicleId: vehicleId,
+        amount: amount,
+        bidderId: user.uid,
+        bidderEmail: user.email,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    };
+
+    // Add bid to Firestore
+    db.collection("bids").add(bidData)
+        .then((docRef) => {
+            console.log("Bid saved with ID: ", docRef.id);
+            alert(`Your bid of $${amount} has been placed successfully!`);
+            
+            // Refresh bid history
+            loadBidHistory(vehicleId);
+            
+            // Clear input field
+            document.getElementById('bidAmount').value = '';
+        })
+        .catch((error) => {
+            console.error("Error saving bid: ", error);
+            alert("There was an error placing your bid. Please try again.");
+        });
+}
+
+// Function to load bid history from Firebase
+function loadBidHistory(vehicleId) {
+    const bidHistoryContainer = document.getElementById('bidHistoryContainer');
+    
+    // Show loading state
+    bidHistoryContainer.innerHTML = '<p>Loading bid history...</p>';
+    
+    // Get bids for this vehicle, ordered by timestamp (newest first)
+    db.collection("bids")
+        .where("vehicleId", "==", vehicleId)
+        .orderBy("timestamp", "desc")
+        .get()
+        .then((querySnapshot) => {
+            if (querySnapshot.empty) {
+                bidHistoryContainer.innerHTML = '<p class="no-bids">No bids yet. Be the first to bid!</p>';
+                return;
+            }
+            
+            let bidsHTML = '';
+            querySnapshot.forEach((doc) => {
+                const bid = doc.data();
+                // Format the timestamp
+                const timestamp = bid.timestamp ? 
+                    new Date(bid.timestamp.toDate()).toLocaleString() : 
+                    'Recent';
+                
+                bidsHTML += `
+                    <div class="bid-item">
+                        <strong>$${bid.amount.toFixed(2)}</strong> 
+                        by ${bid.bidderEmail || 'Unknown'} 
+                        <br><small>${timestamp}</small>
+                    </div>
+                `;
+            });
+            
+            bidHistoryContainer.innerHTML = bidsHTML;
+        })
+        .catch((error) => {
+            console.error("Error getting bids: ", error);
+            bidHistoryContainer.innerHTML = '<p class="no-bids">Error loading bid history.</p>';
+        });
+}
+
+
+
+
+// Populate year filter dropdown
+function populateYearFilter() {
+    const yearFilter = document.getElementById('year-filter');
+    if (!yearFilter) return;
+    
+    const currentYear = new Date().getFullYear();
+    for (let year = currentYear; year >= 1985; year--) {
+        const option = document.createElement('option');
+        option.value = year;
+        option.textContent = year;
+        yearFilter.appendChild(option);
+    }
+}
+
+// Call this function when the page loads
+document.addEventListener('DOMContentLoaded', function() {
+    populateYearFilter();
+    
+    // Add event listener to filter button
+    const filterBtn = document.querySelector('.filter-btn');
+    if (filterBtn) {
+        filterBtn.addEventListener('click', function() {
+            alert('Filter functionality would be implemented here.');
+        });
+    }
+});
+</script>
+</body>
+</html>
+</html>

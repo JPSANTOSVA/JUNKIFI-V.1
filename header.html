@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Header - JUNKIFI</title>
+  <!-- Load Bebas Neue font from Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+ header {
+      background: linear-gradient(135deg, #9d0000 0%, #cc0000 100%);
+      color: white;
+      padding: 8px 0;
+      height: var(--header-height);
+      display: flex;
+      align-items: center;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+      width: 100%;
+    }
+
+   .header-content {
+  display: flex;
+  align-items: center;
+  position: relative; /* allows absolute positioning of nav */
+}
+
+/* Logo container */
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 35px; /* small space between truck.png and JUNKIFI */
+}
+
+/* Truck image */
+.truck-img {
+  height: calc(var(--header-font-size) * 1.8); /* adjust size */
+  display: block;
+  margin: 7; /* remove large right margin */
+  filter: drop-shadow(2px 3px 3px rgba(0, 0, 0, 0.5));
+}
+
+
+
+	
+:root {
+  --header-scale: 1; /* master controller – adjust this to scale the whole header */
+  --header-font-size: calc(50px * var(--header-scale)); /* logo base size */
+  --header-height: calc(55px * var(--header-scale));   /* header height */
+  --nav-font-size: calc(var(--header-font-size) * 0.35);
+  --btn-font-size: calc(var(--header-font-size) * 0.25);
+  --icon-size: calc(var(--header-font-size) * 0.33);
+}
+
+	
+
+/* JUNKIFI logo */
+.logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: var(--header-font-size);
+  font-weight: 100;
+  letter-spacing: -2px;
+  color: white;
+  text-decoration: none;
+  text-transform: uppercase;
+  text-shadow: 2px 3px 3px rgba(0, 0, 0, 0.5);
+  transform: scaleX(2) skewX(-5deg); /* keeps your skew effect */
+  display: block;
+}
+
+
+
+/* Nav links container */
+.nav-links {
+  position: static; /* remove absolute positioning */
+  display: flex;
+  justify-content: center; /* center the nav links */
+  gap: 20px;
+  font-size: var(--nav-font-size);
+  font-weight: 700;
+  white-space: nowrap;
+  flex: 1; /* allow it to take available space */
+}
+
+
+.nav-links a {
+  color: white;
+  text-decoration: none;
+  padding: 0.05em 0.3em;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.6);
+  white-space: nowrap; /* prevent Check Offer from breaking */
+}
+
+/* Each nav link */
+    .nav-links a {
+      color: white;
+      text-decoration: none;
+      padding: 0.05em 0.3em;
+      border-radius: 6px;
+      transition: all 0.3s ease;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.6);
+    }
+
+    /* Hover effect */
+    .nav-links a:hover {
+      background: rgba(255,255,255,0.15);
+      color: #ffcc00;
+    }
+	
+	 /* Active page highlight */
+    .nav-links a.active {
+      background: #ffcc00;
+      color: #1a3a4a;
+      font-weight: 900;
+    }
+
+
+
+
+    .auth-buttons {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    /* Apply Bebas Neue to buttons */
+    .sign-in, .sign-up, .logout-btn {
+      font-family: 'sans-serif';
+      font-size: var(--btn-font-size);
+      letter-spacing: 0.03em;
+    }
+
+    .sign-in {
+  background-color: #ffcc00;
+  color: #1a3a4a;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  font-size: calc(var(--header-font-size) * 0.25); /* still scalable */
+  font-weight: 700; /* 👈 makes the text bold */
+}
+
+
+    .sign-in:hover {
+      background-color: #ffd633;
+    }
+
+    .sign-up {
+      background-color: transparent;
+      color: white;
+      border: 1px solid white;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .sign-up:hover {
+      background-color: white;
+      color: #1a3a4a;
+    }
+
+  
+    /* User info container */
+    .user-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-left: 15px;
+      cursor: pointer;
+      padding: 8px 12px;
+      border-radius: 5px;
+      transition: background-color 0.3s;
+      position: relative;
+    }
+
+    .user-container:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .user-icon {
+      font-size: var(--icon-size);
+    }
+
+    .user-email {
+      color: white;
+      font-weight: 500;
+      max-width: 150px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Logout dropdown */
+    .logout-container {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      margin-top: 8px;
+      display: none;
+      z-index: 1000;
+      background: white;
+      padding: 8px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      animation: fadeIn 0.2s ease-in-out;
+    }
+
+
+    .logout-btn {
+      background: linear-gradient(135deg, #ff6b6b 0%, #ff4e4e 100%);
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 6px;
+      font-weight: 400;
+      font-size: calc(var(--header-font-size) * 0.18);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .logout-btn i {
+      font-size: 16px;
+    }
+
+    .logout-btn:hover {
+      background: linear-gradient(135deg, #ff4e4e 0%, #e63e3e 100%);
+      box-shadow: 0 4px 10px rgba(255, 0, 0, 0.25);
+      transform: translateY(-2px);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+	
+	
+/* Hide hamburger on desktop */
+.menu-toggle {
+  display: none;
+  font-size: 24px;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  margin-left: auto;
+}
+
+@media (max-width: 768px) {
+  .header-content {
+    display: flex;
+    align-items: center;
+    justify-content: center; /* ✅ center everything */
+    position: relative;
+  
+
+
+.auth-buttons {
+  margin-left: auto; /* pushes user section to the far right */
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+
+.menu-toggle {
+    display: block;
+    margin-left: 0;   /* remove auto alignment */
+    margin-right: auto; /* optional, ensures it stays at left */
+    order: -1; /* 👈 forces hamburger to appear before logo */
+  }
+
+
+
+
+
+ /* Center logo + truck in header */
+.logo-container {
+  display: flex;
+  align-items: center;
+  justify-content: center; /* center horizontally */
+  gap:10px;               /* space between truck.png and JUNKIFI */
+  margin: 0 auto;          /* ensures centering in flex parent */
+}
+
+
+  .truck-img {
+    height: 50px;      /* adjust truck size for mobile */
+  }
+
+  .logo {
+    font-size: 30px;   /* adjust logo text size */
+    transform: scaleX(1.8) skewX(-5deg);
+    text-align: Center;
+  }
+
+
+  .user-container {
+    gap: 4px;
+    padding: 4px 6px;
+  }
+
+  .user-icon {
+    font-size: 20px;
+  }
+
+  .user-email {
+    display: none; /* hide text */
+  }
+
+
+.logout-container {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 8px;
+  display: none;
+  z-index: 1000;
+  background: white;   /* 👈 this is the white background */
+  padding: 8px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+.logout-btn {
+      background: white;
+      color: red;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 6px;
+      font-weight: 400;
+      font-size: calc(var(--header-font-size) * 0.18);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+
+  .logout-btn {
+    font-size: 10px;
+    padding: 1px 2px;
+	white-space: nowrap;   /* keeps "Log-out" in one line */
+  }
+
+
+
+
+
+
+
+  .nav-links {
+    position: fixed;
+    top: 0;
+    left: -250px;
+    width: 250px;
+    height: 100%;
+    background: #cc0000;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding-top: 20px;
+    transition: left 0.3s ease;
+    z-index: 999;
+  }
+
+  .nav-links.active {
+    left: 0; /* slide in */
+  }
+
+    .nav-links a {
+    display: block;
+    padding: 15px;
+    border-bottom: 1px solid rgba(255,255,255,0.2);
+    width: 100%;
+    font-size: 15px;   /* 👈 set mobile nav font size */
+    font-weight: 600;  /* optional: make it bolder */
+  }
+  
+  
+  /* Show hamburger on mobile */
+  .menu-toggle {
+	margin-right: 15px; /* space between hamburger and truck.png */
+    display: block;
+  }
+
+
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5); /* dim effect */
+  display: none;
+  z-index: 998;
+}
+
+.overlay.active {
+  display: block;
+}
+
+
+
+
+
+
+
+
+	
+	
+
+	
+  </style>
+</head>
+<body>
+<header>
+  <div class="container">
+    <div class="header-content">
+
+      <!-- Hamburger button (mobile only) -->
+      <button class="menu-toggle" id="menu-toggle">
+        <i class="fas fa-bars"></i>
+      </button>
+
+      <div class="logo-container">
+        <img src="truck.png" alt="Truck" class="truck-img">
+        <a href="index.html" class="logo">JUNKIFI</a>
+      </div>
+
+      <div class="nav-links" id="nav-links">
+
+  <a href="checkoffer.html" id="checkoffer-link" style="display: none;">Check Offer</a>
+  <a href="browse.html" id="browse-link" style="display: none;">Browse Vehicles</a>
+  <a href="sell.html" id="sell-link" style="display: none;">Sell Vehicle</a>
+  <a href="dashboard.html" id="dashboard-link" style="display: none;">Dashboard</a>
+</div>
+
+
+      <div class="auth-buttons">
+        <button class="sign-in" id="sign-in-btn" onclick="window.location.href='signin.html'">Sign In</button>
+        <div class="user-container" id="user-container" style="display: none;">
+          <i class="fas fa-user-circle user-icon"></i>
+          <span class="user-email" id="user-email"></span>
+          <div class="logout-container" id="logout-container">
+            <button class="logout-btn" id="logout-btn">
+              <i class="fas fa-sign-out-alt"></i> Log-out
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</header>
+
+<div class="overlay" id="overlay"></div>
+
+
+  <script src="auth-manager.js"></script>
+  
+  <script>
+  
+const menuToggle = document.getElementById('menu-toggle');
+const navLinks = document.getElementById('nav-links');
+const overlay = document.getElementById('overlay');
+
+// Open menu
+menuToggle.addEventListener('click', () => {
+  navLinks.classList.add('active');
+  overlay.classList.add('active');
+});
+
+
+
+// Close menu function
+function closeMenu() {
+  navLinks.classList.remove('active');
+  overlay.classList.remove('active');
+}
+
+
+// Close when overlay is clicked
+overlay.addEventListener('click', closeMenu);
+
+// Close when clicking a nav link
+document.querySelectorAll('.nav-links a').forEach(link => {
+  link.addEventListener('click', closeMenu);
+});
+
+
+// ======================
+// Swipe-to-close (mobile)
+// ======================
+let touchStartX = 0;
+let touchEndX = 0;
+
+document.addEventListener("touchstart", (e) => {
+  if (window.innerWidth <= 768) {
+    touchStartX = e.changedTouches[0].screenX;
+  }
+});
+
+document.addEventListener("touchend", (e) => {
+  if (window.innerWidth <= 768) {
+    touchEndX = e.changedTouches[0].screenX;
+
+    // Swipe left (close menu)
+    if (touchStartX - touchEndX > 50 && navLinks.classList.contains("active")) {
+      closeMenu();
+    }
+
+    // (Optional) Swipe right (open menu)
+    if (touchEndX - touchStartX > 50 && !navLinks.classList.contains("active")) {
+      navLinks.classList.add("active");
+      overlay.classList.add("active");
+    }
+  }
+});
+
+  
+  
+  
+    document.addEventListener('DOMContentLoaded', function() {
+      // Check authentication state when DOM is loaded
+      AuthManager.checkAuthState();
+      
+      // Add event listeners for user interactions
+      const userContainer = document.getElementById('user-container');
+      const logoutBtn = document.getElementById('logout-btn');
+      const logoutContainer = document.getElementById('logout-container');
+      
+      if (userContainer) {
+        userContainer.addEventListener('click', function(e) {
+          e.stopPropagation();
+          logoutContainer.style.display = 
+            logoutContainer.style.display === 'block' ? 'none' : 'block';
+        });
+      }
+      
+     if (logoutBtn) {
+  logoutBtn.addEventListener('click', function(e) {
+    e.stopPropagation();
+    AuthManager.logout();  // <-- this works
+  });
+}
+
+      document.addEventListener('click', function(e) {
+        if (logoutContainer && userContainer && !userContainer.contains(e.target)) {
+          logoutContainer.style.display = 'none';
+        }
+      });
+    });
+	
+	// Function to update the visibility of the browse link
+    function updateBrowseLinkVisibility(isLoggedIn) {
+      const browseLink = document.getElementById('browse-link');
+      if (browseLink) {
+        browseLink.style.display = isLoggedIn ? 'block' : 'none';
+      }
+    }
+	
+	
+	
+	
+	
+    function updateCheckOfferLinkVisibility(isLoggedIn) {
+  const checkOfferLink = document.getElementById('checkoffer-link');
+  if (checkOfferLink) {
+    checkOfferLink.style.display = isLoggedIn ? 'block' : 'none';
+  }
+}
+    // Function to update the visibility of the sell link
+    function updateSellLinkVisibility(isLoggedIn) {
+      const sellLink = document.getElementById('sell-link');
+      if (sellLink) {
+        sellLink.style.display = isLoggedIn ? 'block' : 'none';
+      }
+    }
+	
+	 // Function to update the visibility of the sell link
+    function updateDashboardLinkVisibility(isLoggedIn) {
+      const dashboardLink = document.getElementById('dashboard-link');
+      if (dashboardLink) {
+        dashboardLink.style.display = isLoggedIn ? 'block' : 'none';
+      }
+    }
+	
+	document.addEventListener("DOMContentLoaded", () => {
+  const currentPage = window.location.pathname.split("/").pop();
+  document.querySelectorAll(".nav-links a").forEach(link => {
+    if (link.getAttribute("href") === currentPage) {
+      link.classList.add("active");
+    }
+  });
+});
+
+  </script>
+</body>
+</html>

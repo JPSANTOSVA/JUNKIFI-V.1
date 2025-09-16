@@ -1,0 +1,419 @@
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JUNKIFI - Index</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="policy.css">
+
+    <!-- Add Firebase SDKs FIRST -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+    <!-- Then load your scripts that depend on Firebase -->
+    <script src="modelData.js"></script>
+	<script src="auth-manager.js"></script>
+ 
+	
+	
+</head>
+<body>
+
+<!-- Header Placeholder -->
+<div id="header-placeholder"></div>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h1>Sell Your Car the Easy Way</h1>
+            <p>Guaranteed. Simple. Trusted.</p>
+            
+            <button class="list-vehicle-btn" id="list-vehicle-btn" style="display: none;">
+                <i class="fas fa-plus"></i> List a Vehicle
+            </button>
+            
+<div class="search-form">
+    <form id="vehicle-form">
+        <!-- Row 1: Year + Email -->
+        <div class="form-row">
+            <div class="form-group small">
+                <label for="year">Year</label>
+                <select id="year" required>
+                    <option value="">Select Year</option>
+                </select>
+                <div class="error-message" id="year-error">Please select a year</div>
+            </div>
+
+            <div class="form-group small">
+                <label for="email">Email</label>
+                <input type="text" id="email" placeholder="Enter Email" required>
+                <div class="error-message" id="email-error">Please enter an Email</div>
+            </div>
+        </div>
+
+        <!-- Row 2: Make + Car Zip Code -->
+        <div class="form-row">
+            <div class="form-group small">
+                <label for="make">Make</label>
+                <select id="make" required>
+                    <option value="">Select Make</option>
+                </select>
+                <div class="error-message" id="make-error">Please select a make</div>
+            </div>
+
+            <div class="form-group small">
+                <label for="location">Car Zip Code</label>
+                <input type="text" id="location" placeholder="Car Zip Code" required>
+                <div class="error-message" id="location-error">Please enter a zip code</div>
+            </div>
+        </div>
+
+        <!-- Row 3: Model + Phone -->
+        <div class="form-row">
+            <div class="form-group small">
+                <label for="model">Model</label>
+                <select id="model" required>
+                    <option value="">Select Model</option>
+                </select>
+                <div class="error-message" id="model-error">Please select a model</div>
+            </div>
+
+            <div class="form-group small">
+                <label for="contact-number">Phone Number</label>
+                <input type="tel" id="contact-number" placeholder="(555) 555-5555" required>
+                <div class="error-message" id="number-error">Please enter a valid phone number</div>
+            </div>
+        </div>
+
+        <!-- ✅ Row 4: Name -->
+<div class="form-row name-row">
+    <div class="form-group small">
+        <label for="name">Name</label>
+        <input type="text" id="name" placeholder="Enter Full Name" required>
+        <div class="error-message" id="name-error">Please enter your name</div>
+    </div>
+</div>
+
+
+        <!-- Submit Button -->
+        <div class="form-row">
+            <button type="submit" class="search-btn" id="get-offer-btn" disabled>Get Offer</button>
+        </div>
+    </form>
+
+  <div class="privacy-notice">
+    <p>We only contact you about your car. By submitting, you acknowledge our privacy policy and agree to receive messages from Wheelzy and our partners.</p>
+</div>
+</div>
+
+
+    </section>
+<main class="container">
+    <section class="privacy-policy">
+        <h2>Privacy Policy</h2>
+        <p>This privacy notice serves to disclose the privacy practices of Wheelzy, "We," and applies exclusively to information collected by the Wheelzy website. You’ll also learn how we use it, what control you have over it, and how you can address questions or concerns to us.</p>
+
+        <h3>Your Personal Information and Cookies</h3>
+        <p>We may collect cookies and IP addresses from you. Cookies are small files that a site or its service provider transfers to your computer’s hard drive through your Web browser (if you allow) that enables the sites or service providers’ systems to recognize your browser and capture and remember certain information. With this information we can implement more advanced options into your account, further customizing your experience. For example, cookies have the ability to store your login information so that you could access your account immediately. These types of information may be aggregated and generalized, meaning there is no way to track a cookie back to you. With this information we’re analyzing how much people use our site and looking for more ways to improve user experiences. We continually strive to improve our website offerings based on the information and feedback we receive from you so we can more effectively respond to your customer service requests and support needs.</p>
+
+        <h3>Our Partners and Outside Parties</h3>
+        <p>At Wheelzy, we work with a number of partners in order to enhance your experience further. Please be aware that we’ll never share your data with our partners unless you give us permission. We may, however, provide links to other websites on our pages. We do not sell, trade, or otherwise transfer to outside parties your personally identifiable information. This does not include trusted third parties who assist us in operating our website, conducting our business, or servicing you, so long as those parties agree to keep this information confidential. We may also release your information when we believe release is appropriate to comply with the law, enforce our site policies, or protect ours or others rights, property, or safety. When you leave our site we have no control over how our partners will use your data. It’s important that you always read their privacy policies too so that you can be fully informed about their practices.</p>
+
+        <h3>California Online Privacy Protection Act Compliance</h3>
+        <p>Because we value your privacy we have taken the necessary precautions to be in compliance with the California Online Privacy Protection Act. We therefore will not distribute your personal information to outside parties without your consent.</p>
+
+        <h3>Children's Online Privacy Protection Act Compliance</h3>
+        <p>We are in compliance with the requirements of COPPA (Children’s Online Privacy Protection Act), we do not collect any information from anyone under 13 years of age. Our website, products and services are all directed to people who are at least 13 years old or older.</p>
+
+        <h3>Online Privacy Policy Only</h3>
+        <p>This online privacy policy applies only to information collected through our website and not to information collected offline.</p>
+
+        <h3>Telephone Consumer Protection Act</h3>
+        <p>By submitting your phone number using our online form, you are requesting information about Wheelzy’s service and thereby opting-in to receive calls and messages from Wheelzy and our partners. Additionally, in accordance with Telephone Consumer Protection Act ("TCPA”), we only contact you regarding the inquiry you submit to sell your vehicle. You may opt-out of future messages at any time by sending “STOP”. Standard message and data rates may apply. Message frequency varies.</p>
+
+        <h3>Changes to Our Privacy Policy</h3>
+        <p>As our technology changes, we will update this privacy policy periodically. Be advised that these updates may be made with or without prior notification to you. Please check our home page often to stay informed as this is where we’ll provide links or posts to our policy updates.</p>
+
+        <h3>Your Consent</h3>
+        <p>By using our site, you consent to our privacy policy.</p>
+
+        <h3>Contact Us</h3>
+        <p>If there are any questions regarding this privacy policy, you may contact us using the information below.</p>
+        <p><strong>Contact us:</strong> <a href="mailto:Privacy@JUNKIFI.com">Privacy@JUNKIFI.com</a></p>
+    </section>
+</main>
+
+
+    <!-- Footer (loaded from footer.html) -->
+    <div id="footer-placeholder"></div>
+
+    <script>
+	
+	
+	
+	
+fetch("header.html")
+  .then(res => res.text())
+  .then(data => {
+    const headerPlaceholder = document.getElementById("header-placeholder");
+    headerPlaceholder.innerHTML = data;
+
+    // Run any <script> tags from header.html
+    const scripts = headerPlaceholder.querySelectorAll("script");
+    scripts.forEach(oldScript => {
+      const newScript = document.createElement("script");
+      if (oldScript.src) {
+        newScript.src = oldScript.src;
+      } else {
+        newScript.textContent = oldScript.textContent;
+      }
+      document.body.appendChild(newScript);
+    });
+    
+    // Initialize auth after header is loaded
+    if (typeof AuthManager !== 'undefined') {
+      AuthManager.checkAuthState();
+    }
+    
+
+	// Add redirect functionality to the Get Offer button
+document.getElementById('get-offer-btn').addEventListener('click', function() {
+    window.location.href = 'offer.html';
+});
+	
+    
+	
+	
+	
+	
+	
+	
+    // Load footer.html into placeholder
+    fetch("footer.html")
+      .then(response => response.text())
+      .then(data => {
+        document.getElementById("footer-placeholder").innerHTML = data;
+      });
+    
+    // Load year options
+    fetch("years.html")
+      .then(response => response.text())
+      .then(data => {
+        document.getElementById("year").innerHTML = '<option value="">Select Year</option>' + data;
+      })
+      .catch(error => console.error("Error loading years:", error));
+
+    // Load make options
+    fetch("makes.html")
+      .then(response => response.text())
+      .then(data => {
+        document.getElementById("make").innerHTML = '<option value="">Select Make</option>' + data;
+        // Set up model dropdown functionality after makes are loaded
+        setupModelDropdown();
+      })
+      .catch(error => console.error("Error loading makes:", error));
+    
+  })
+  .catch(error => console.error("Error loading header:", error));
+
+// Function to set up model dropdown functionality
+function setupModelDropdown() {
+  const makeSelect = document.getElementById('make');
+  const modelSelect = document.getElementById('model');
+
+  // Function to populate models based on selected make
+  function populateModels(selectedMake) {
+    // Clear existing options except the first one
+    modelSelect.innerHTML = '<option value="">Select Model</option>';
+    
+    // Add models based on selected make
+    if (modelData && modelData[selectedMake]) {
+      modelData[selectedMake].forEach(model => {
+        const option = document.createElement('option');
+        option.value = model;
+        option.textContent = model;
+        modelSelect.appendChild(option);
+      });
+    }
+  }
+
+  // Event listener for make selection change
+  makeSelect.addEventListener('change', function() {
+    const selectedMake = this.value;
+    populateModels(selectedMake);
+  });
+
+  // Initialize with first make if available
+  if (makeSelect.options.length > 1) {
+    populateModels(makeSelect.options[1].value);
+  }
+}
+
+    // Get form elements
+        const yearSelect = document.getElementById('year');
+        const makeSelect = document.getElementById('make');
+        const modelSelect = document.getElementById('model');
+        const locationInput = document.getElementById('location');
+		const numberInput = document.getElementById('contact-number');
+        const getOfferButton = document.getElementById('get-offer-btn');
+        
+        // Get error message elements
+        const yearError = document.getElementById('year-error');
+        const makeError = document.getElementById('make-error');
+        const modelError = document.getElementById('model-error');
+        const locationError = document.getElementById('location-error');
+		const numberError = document.getElementById('number-error');
+
+
+/// Update validateForm()
+function validateForm() {
+    let isValid = true;
+    const nameInput = document.getElementById('name'); // Get name input
+    const nameError = document.getElementById('name-error'); // Get name error
+
+    // Validate Year
+    if (!yearSelect.value) {
+        yearError.style.display = 'block';
+        isValid = false;
+    } else {
+        yearError.style.display = 'none';
+    }
+
+    // Validate Make
+    if (!makeSelect.value) {
+        makeError.style.display = 'block';
+        isValid = false;
+    } else {
+        makeError.style.display = 'none';
+    }
+
+    // Validate Model
+    if (!modelSelect.value) {
+        modelError.style.display = 'block';
+        isValid = false;
+    } else {
+        modelError.style.display = 'none';
+    }
+
+    // Validate Location
+    if (!locationInput.value.trim()) {
+        locationError.style.display = 'block';
+        isValid = false;
+    } else {
+        locationError.style.display = 'none';
+    }
+
+    // Validate Number
+    if (!numberInput.value.trim()) {
+        numberError.style.display = 'block';
+        isValid = false;
+    } else {
+        numberError.style.display = 'none';
+    }
+
+    // ✅ Validate Name
+    if (!nameInput.value.trim()) {
+        nameError.style.display = 'block';
+        isValid = false;
+    } else {
+        nameError.style.display = 'none';
+    }
+
+    return isValid;
+}
+
+
+
+
+// Add form submission handler
+document.getElementById('vehicle-form').addEventListener('submit', function(e) {
+    e.preventDefault(); // Prevent default form submission
+    
+    if (validateForm()) {
+        // Create an object with the form data (INCLUDING NAME)
+        const vehicleData = {
+            year: document.getElementById('year').value,
+            make: document.getElementById('make').value,
+            model: document.getElementById('model').value,
+            email: document.getElementById('email').value,
+            location: document.getElementById('location').value,
+            contactNumber: document.getElementById('contact-number').value,
+            name: document.getElementById('name').value, // ADD THIS LINE
+            timestamp: new Date().toISOString() // Add a timestamp
+        };
+        
+        // Save to local storage AND session storage for redundancy
+        localStorage.setItem('vehicleOfferData', JSON.stringify(vehicleData));
+        sessionStorage.setItem('vehicleBasicInfo', JSON.stringify(vehicleData));
+        
+        // Redirect to offer page
+        window.location.href = 'offer.html';
+    }
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Update checkFormCompletion()
+function checkFormCompletion() {
+    const nameInput = document.getElementById('name'); // Get name input
+    const isFilled = yearSelect.value && makeSelect.value &&
+                     modelSelect.value && locationInput.value.trim() &&
+                     numberInput.value.trim() && nameInput.value.trim(); // Add name check
+
+    getOfferButton.disabled = !isFilled;
+
+    if (isFilled) {
+        getOfferButton.style.cursor = 'pointer';
+        getOfferButton.title = 'Click to get your offer';
+    } else {
+        getOfferButton.style.cursor = 'not-allowed';
+        getOfferButton.title = 'Please fill all fields to get an offer';
+    }
+}
+
+		
+		document.getElementById('name').addEventListener('input', checkFormCompletion);
+		numberInput.addEventListener('input', checkFormCompletion);
+        yearSelect.addEventListener('change', checkFormCompletion);
+        makeSelect.addEventListener('change', checkFormCompletion);
+        modelSelect.addEventListener('change', checkFormCompletion);
+        locationInput.addEventListener('input', checkFormCompletion);
+        
+        // Add click event to Get Offer button
+        getOfferButton.addEventListener('click', function() {
+            if (validateForm()) {
+                // If form is valid, redirect to offer.html
+                window.location.href = 'offer.html';
+            }
+        });
+        
+        // Initialize form state
+        checkFormCompletion();
+
+
+
+</script>
+
+</body>
+</html>
